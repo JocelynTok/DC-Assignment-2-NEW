@@ -1,5 +1,7 @@
 ﻿using DC_Assignment_2_NEW.Models;
 using System.Data.SQLite;
+using System.Transactions;
+using Transaction = DC_Assignment_2_NEW.Models.Transaction;
 
 namespace DC_Assignment_2_NEW.Data
 {
@@ -290,7 +292,7 @@ namespace DC_Assignment_2_NEW.Data
                     {
                         // Build the SQL command to update data by ID
                         command.CommandText = $"UPDATE TransactionTable SET AccountNo = @AccountNo, TransactionType = @TransactionType , Amount = @Amount WHERE TransactionID = @TransactionID";
-                        command.Parameters.AddWithValue("@TransactionID", transaction.AccountNo);
+                        command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
                         command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                         command.Parameters.AddWithValue("@Amount", transaction.Amount);
                         command.Parameters.AddWithValue("@AccountNo", transaction.AccountNo);
@@ -530,11 +532,11 @@ namespace DC_Assignment_2_NEW.Data
 
                 InsertTransaction(transaction);
 
-                transaction = new Transaction();
-                transaction.TransactionID = "2";
-                transaction.TransactionType = "DEPOSIT";
-                transaction.Amount = 12452;
-                transaction.AccountNo = "223456789";
+                Transaction transaction1 = new Transaction();
+                transaction1.TransactionID = "2";
+                transaction1.TransactionType = "DEPOSIT";
+                transaction1.Amount = 12452;
+                transaction1.AccountNo = "223456789";
 
                 InsertTransaction(transaction);
 
@@ -546,7 +548,20 @@ namespace DC_Assignment_2_NEW.Data
 
                 InsertTransaction(transaction);
 
+                
+
             }
+
+            Transaction transaction2 = new Transaction();
+            transaction2.TransactionID = "4";
+            transaction2.TransactionType = "DEPOSIT";
+            transaction2.Amount = 100;
+            transaction2.AccountNo = "323456789";
+            //InsertTransaction(transaction2);
+
+            //DeleteTransaction("4");
+            transaction2.Amount = 500;
+            UpdateTransaction(transaction2);
         }
     }
 }
