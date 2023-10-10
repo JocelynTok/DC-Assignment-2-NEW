@@ -1,7 +1,11 @@
+using DC_Assignment_2_NEW.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+DBManager.DBInitialize();
 
 var app = builder.Build();
 
