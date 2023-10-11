@@ -1,4 +1,5 @@
 ﻿using DC_Assignment_2_NEW.Models;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Transactions;
 using Transaction = DC_Assignment_2_NEW.Models.Transaction;
@@ -73,6 +74,43 @@ namespace DC_Assignment_2_NEW.Data
                 }
             }
             catch(Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+            return false; //create table failed
+        }
+
+        public static bool CreateUserProfileTable()
+        {
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                {
+                    connection.Open();
+                    //Create a new SQLite command to execute SQL
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
+                        //SQL Command to create a table named "UserProfileTable"
+                        command.CommandText = @"
+                        CREATE TABLE UserProfileTable (
+                            Username TEXT,
+                            Email TEXT,
+                            Address TEXT,
+                            Phone TEXT,
+                            PictureUrl TEXT,
+                            PasswordHash TEXT,
+                            AccountNo TEXT,
+                            Roles TEXT 
+                        )";
+
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
+                    Console.WriteLine("Table created successfully.");
+                    return true;
+                }
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
@@ -491,6 +529,219 @@ namespace DC_Assignment_2_NEW.Data
             return transaction;
         }
 
+        public static bool InsertUserProfile(UserProfile userProfile)
+        {
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                        INSERT INTO UserProfileTable (Username, Email, Address, Phone, PictureUrl, PasswordHash, AccountNo, Roles)
+                        VALUES (@Username, @Email, @Address, @Phone, @PictureUrl, @PasswordHash, @AccountNo, @Roles)
+                        ";
+
+                        //define user profile parameters
+                        command.Parameters.AddWithValue("@Username", userProfile.Username);
+                        command.Parameters.AddWithValue("@Email", userProfile.Email);
+                        command.Parameters.AddWithValue("@Address", userProfile.Address);
+                        command.Parameters.AddWithValue("@Phone", userProfile.Phone);
+                        command.Parameters.AddWithValue("@PictureUrl", userProfile.PictureUrl);
+                        command.Parameters.AddWithValue("@PasswordHash", userProfile.PasswordHash);
+                        command.Parameters.AddWithValue("@AccountNo", userProfile.AccountNo);
+                        command.Parameters.AddWithValue("@Roles", userProfile.Roles);
+
+                        int rowsInserted = command.ExecuteNonQuery();
+
+                        //check if any rows were inserted
+                        connection.Close();
+                        if (rowsInserted > 0)
+                        {
+                            return true; //insertion was successful
+                        }
+                    }
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error with user profile: " + ex.Message);
+            }
+            return false; //insert transaction fail
+        }
+
+        // Method to retrieve a user profile by email
+        public static UserProfile GetUserProfileByEmail(string email)
+        {
+            UserProfile userProfile = null;
+
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT * FROM UserProfileTable WHERE Email = @Email";
+                        command.Parameters.AddWithValue("@Email", email);
+
+                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                userProfile = new UserProfile();
+                                userProfile.Username = reader["Username"].ToString();
+                                userProfile.Email = reader["Email"].ToString();
+                                userProfile.Address = reader["Address"].ToString();
+                                userProfile.Phone = reader["Phone"].ToString();
+                                userProfile.PictureUrl = reader["PictureUrl"].ToString();
+                                userProfile.PasswordHash = reader["PasswordHash"].ToString();
+                                userProfile.AccountNo = reader["AccountNo"].ToString();
+                                userProfile.Roles = reader["Roles"].ToString();
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error retrieving user profile: " + ex.Message);
+            }
+
+            return userProfile;
+        }
+
+        public static List<UserProfile> GetAllUserProfiles()
+        {
+            List<UserProfile> userProfiles = new List<UserProfile>();
+
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT * FROM UserProfileTable";
+
+                        using (SQLiteDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                UserProfile userProfile = new UserProfile
+                                {
+                                    Username = reader["Username"].ToString(),
+                                    Email = reader["Email"].ToString(),
+                                    Address = reader["Address"].ToString(),
+                                    Phone = reader["Phone"].ToString(),
+                                    PictureUrl = reader["PictureUrl"].ToString(),
+                                    PasswordHash = reader["PasswordHash"].ToString(),
+                                    AccountNo = reader["AccountNo"].ToString(),
+                                    Roles = reader["Roles"].ToString()
+                                };
+
+                                userProfiles.Add(userProfile);
+                            }
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error retrieving user profiles: " + ex.Message);
+            }
+
+            return userProfiles;
+        }
+
+        public static bool DeleteUserProfile(string username)
+        {
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "DELETE FROM UserProfileTable WHERE Username = @Username";
+                        command.Parameters.AddWithValue("@Username", username);
+
+                        int rowsDeleted = command.ExecuteNonQuery();
+
+                        connection.Close();
+
+                        if (rowsDeleted > 0)
+                        {
+                            return true; // Deletion was successful
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error deleting user profile: " + ex.Message);
+            }
+
+            return false; // Deletion failed
+        }
+
+        public static bool UpdateUserProfile(UserProfile userProfile)
+        {
+            try
+            {
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (SQLiteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                    UPDATE UserProfileTable
+                    SET Email = @Email, Address = @Address, Phone = @Phone, PictureUrl = @PictureUrl, PasswordHash = @PasswordHash, AccountNo = @AccountNo, Roles = @Roles
+                    WHERE Username = @Username
+                ";
+
+                        command.Parameters.AddWithValue("@Email", userProfile.Email);
+                        command.Parameters.AddWithValue("@Address", userProfile.Address);
+                        command.Parameters.AddWithValue("@Phone", userProfile.Phone);
+                        command.Parameters.AddWithValue("@PictureUrl", userProfile.PictureUrl);
+                        command.Parameters.AddWithValue("@PasswordHash", userProfile.PasswordHash);
+                        command.Parameters.AddWithValue("@AccountNo", userProfile.AccountNo);
+                        command.Parameters.AddWithValue("@Roles", userProfile.Roles);
+                        command.Parameters.AddWithValue("@Username", userProfile.Username);
+
+                        int rowsUpdated = command.ExecuteNonQuery();
+
+                        connection.Close();
+
+                        if (rowsUpdated > 0)
+                        {
+                            return true; // Update was successful
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error updating user profile: " + ex.Message);
+            }
+
+            return false; // Update failed
+        }
+
+
         public static void DBInitialize()
         {
             if (CreateTable())
@@ -547,9 +798,6 @@ namespace DC_Assignment_2_NEW.Data
                 transaction.AccountNo = "323456789";
 
                 InsertTransaction(transaction);
-
-                
-
             }
 
             Transaction transaction2 = new Transaction();
@@ -562,6 +810,47 @@ namespace DC_Assignment_2_NEW.Data
             //DeleteTransaction("4");
             transaction2.Amount = 500;
             UpdateTransaction(transaction2);
+
+            if (CreateUserProfileTable())
+            {
+                UserProfile userProfile = new UserProfile();
+
+                userProfile.Username = "Shu Man";
+                userProfile.Email = "shuman@gmail.com";
+                userProfile.Address = "Miri,Sarawak";
+                userProfile.Phone = "60102827568";
+                userProfile.PictureUrl = "https://www.pexels.com/photo/turned-on-bokeh-light-370799/";
+                userProfile.PasswordHash = "shuman_password";
+                userProfile.AccountNo = "123456789";
+                userProfile.Roles = "admin";
+
+                InsertUserProfile(userProfile);
+
+                userProfile.Username = "Jasmine";
+                userProfile.Email = "jasmine@gmail.com";
+                userProfile.Address = "Miri,Sarawak";
+                userProfile.Phone = "60138928158";
+                userProfile.PictureUrl = "https://www.pexels.com/photo/yellow-bokeh-photo-949587/";
+                userProfile.PasswordHash = "jasmine_password"; 
+                userProfile.AccountNo = "223456789";
+                userProfile.Roles = "employee";
+
+                InsertUserProfile(userProfile);
+
+                userProfile.Username = "Jia Yi";
+                userProfile.Email = "jiayi@gmail.com";
+                userProfile.Address = "Miri,Sarawak";
+                userProfile.Phone = "60138336623";
+                userProfile.PictureUrl = "https://www.pexels.com/photo/defocused-image-of-lights-255379/";
+                userProfile.PasswordHash = "jiayi_password"; 
+                userProfile.AccountNo = "323456789";
+                userProfile.Roles = "employee";
+
+                InsertUserProfile(userProfile);
+
+            }
         }
+
+
     }
 }
