@@ -6,6 +6,7 @@ namespace DC_Assignment_2_NEW.Data
     public class DBManager
     {
         private static string connectionString = "Data Source=mydatabase.db;Version=3;";
+        
 
         public static bool CreateTable()
         {
@@ -327,7 +328,7 @@ namespace DC_Assignment_2_NEW.Data
                     {
                         // Build the SQL command to update data by ID
                         command.CommandText = $"UPDATE TransactionTable SET AccountNo = @AccountNo, TransactionType = @TransactionType , Amount = @Amount WHERE TransactionID = @TransactionID";
-                        command.Parameters.AddWithValue("@TransactionID", transaction.AccountNo);
+                        command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
                         command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                         command.Parameters.AddWithValue("@Amount", transaction.Amount);
                         command.Parameters.AddWithValue("@AccountNo", transaction.AccountNo);
@@ -740,8 +741,30 @@ namespace DC_Assignment_2_NEW.Data
 
         public static void DBInitialize()
         {
+            DBGenerator generator = new DBGenerator();
+            int initialAccountNo = 20;
+            //change this to change the amount of initial accounts created
+
             if (CreateTable())
             {
+                int balance = 0;
+                string accountNumber = "", username = "", email = "";
+       
+                Account account;
+                for(int i=0; i < initialAccountNo; i++)
+                {
+                    account = new Account();
+                    generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                    account.AccountNo = accountNumber;
+                    account.Username = username;
+                    account.Email = email;
+                    account.Balance = balance;
+                    
+                    //Console.WriteLine(account.AccountToString());
+                    Insert(account);
+                }
+
+                /*
                 Account account = new Account();
                 account.AccountNo = "123456789";
                 account.Username = "Shu Man";
@@ -765,42 +788,26 @@ namespace DC_Assignment_2_NEW.Data
                 account.Balance = 1500;
 
                 Insert(account);
+                */
+
 
             }
 
-            if (CreateTransactionTable())
-            {
-
-                Transaction transaction = new Transaction();
-                transaction.TransactionID = "1";
-                transaction.TransactionType = "DEPOSIT";
-                transaction.Amount = 10000000;
-                transaction.AccountNo = "123456789";
-
-                InsertTransaction(transaction);
-
-                transaction = new Transaction();
-                transaction.TransactionID = "2";
-                transaction.TransactionType = "DEPOSIT";
-                transaction.Amount = 12452;
-                transaction.AccountNo = "223456789";
-
-                InsertTransaction(transaction);
-
-                transaction = new Transaction();
-                transaction.TransactionID = "3";
-                transaction.TransactionType = "WITHDRAW";
-                transaction.Amount = 1400;
-                transaction.AccountNo = "323456789";
-
-                InsertTransaction(transaction);
-
-            }
 
             if (CreateUserProfileTable())
             {
                 UserProfile userProfile = new UserProfile();
 
+                List<Account> accounts = GetAll();
+                foreach (Account account in accounts)
+                {
+                    //for each account, we create the rest of the profile based on that account and insert it into the db
+                    UserProfile user = generator.GetNextUserProfile(account);
+                    //Console.WriteLine(user.ProfileToString());
+                    InsertUserProfile(user);
+                }
+
+                /*
                 userProfile.Username = "Shu Man";
                 userProfile.Email = "shuman@gmail.com";
                 userProfile.Address = "Miri,Sarawak";
@@ -833,8 +840,57 @@ namespace DC_Assignment_2_NEW.Data
                 userProfile.Roles = "employee";
 
                 InsertUserProfile(userProfile);
-
+                */
             }
+
+            if (CreateTransactionTable())
+            {
+                Transaction transaction = new Transaction();
+                
+                List<Account> accounts = GetAll();
+                foreach (Account account in accounts)
+                {
+                    //create a transaction for each account
+                    string transactionID = "", transactionType = "", accountNo = "";
+                    int amount = 0;
+                    //for each account, we create the rest of the profile based on that account and insert it into the db
+                    generator.GetNextTransaction(out transactionID, out transactionType, out amount);
+
+                    transaction.TransactionID = transactionID;
+                    transaction.TransactionType = transactionType;
+                    transaction.Amount = amount;
+                    transaction.AccountNo = account.AccountNo;
+
+                    //Console.WriteLine(user.ProfileToString());
+                    InsertTransaction(transaction);
+                }
+                /*
+                Transaction transaction = new Transaction();
+                transaction.TransactionID = "1";
+                transaction.TransactionType = "DEPOSIT";
+                transaction.Amount = 10000000;
+                transaction.AccountNo = "123456789";
+
+                InsertTransaction(transaction);
+
+                transaction = new Transaction();
+                transaction.TransactionID = "2";
+                transaction.TransactionType = "DEPOSIT";
+                transaction.Amount = 12452;
+                transaction.AccountNo = "223456789";
+
+                InsertTransaction(transaction);
+
+                transaction = new Transaction();
+                transaction.TransactionID = "3";
+                transaction.TransactionType = "WITHDRAW";
+                transaction.Amount = 1400;
+                transaction.AccountNo = "323456789";
+
+                InsertTransaction(transaction);
+                */
+            }
+
         }
     }
 }
