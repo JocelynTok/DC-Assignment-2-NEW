@@ -1,0 +1,30 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+    <div id=" = main" >
+        <div id="header">
+        <h1> User Panel </h1>
+    </div>
+    <div id="navigation">
+        <ul>
+            <li> <button type="button" id="Home" onclick="loadView()">Home</button></li>
+            <li> <button type="button" id="ProfileButton" onclick="loadUserView('user-profile')">Profile</button></li>
+        </ul>
+    </div>
+    <div id="summary">
+        <h1> Account Summary</h1>
+        <label>Account Number: <span id="acctNo"></span></label>
+        <label>Balance: <span id="balance"></span></label>
+        <br/>
+        <button id="history" onclick="loadUserView('transaction-history')"> View Transaction History </button>
+        <button id="transaction"> Make A Transaction </button>
+        <button id="transfer"> Make A Transfer </button>
+    </div>
+    <div id="content">
+    </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/site.js"></script>

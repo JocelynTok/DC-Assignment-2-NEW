@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div id="main">
+    <h1> Profile</h1>
+    <img id="AprofileImage" />
+    <label>Username <span id="Ausername"></span></label>
+    <label>Email: <span id="Aemail"></span></label>
+    <label>Account Number: <span id="AacctNo"></span></label>
+    <label>Address: <span id="Aaddress"></span></label>
+    <label>Contact Number: <span id="Aphone"></span></label>
+
+    <br />
+    <br />
+    <br />
+    <button type="button" id="updateProfile" onclick="adminUpdateProfile()"> Edit Profile Details </button>
+
+</div>
+<div id="update-modal" class="modal">
+    <div class="modal-content">
+        <h2>Edit Profile Details</h2>
+        <form id="updateProfileForm">
+            <label for="new-email">New Email:</label>
+            <input type="email" id="new-email" name="new-email"><br>
+
+            <label for="new-address">New Address:</label>
+            <input type="text" id="new-address" name="new-address"><br>
+
+            <label for="new-phone">New Contact Number:</label>
+            <input type="tel" id="new-phone" name="new-phone"><br>
+
+            <label for="new-password">New Password:</label>
+            <input type="password" id="new-password" name="new-password"><br>
+
+            <button type="button" id="confirm-update">Save Changes</button>
+            <button type="button" id="cancel-update"> Cancel</button>
+        </form>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/site.js"></script>
