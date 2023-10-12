@@ -1,0 +1,32 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div id="main">
+    <h1> Admins List </h1>
+    <input type="text" id="search-bar" placeholder="Search by email">
+    <button id="search-btn" onclick="handleAdminSearch()">Search</button>
+    <!-- Clear Search Button -->
+    <button id="clear-search" onclick="clearAdminSearch()">Clear Search</button>
+    <br />
+
+    <table id="admin-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Account No</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody id="admin-table-body">
+            <!-- Admin rows will be added here dynamically -->
+        </tbody>
+    </table>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/site.js"></script>

@@ -238,45 +238,6 @@ namespace DC_Assignment_2_NEW.Data
             }
         }
 
-        /*
-        public static bool DeleteTransaction(string transactionID)
-        {
-            try
-            {
-                // Create a new SQLite connection
-                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-                {
-                    connection.Open();
-
-                    // Create a new SQLite command to execute SQL
-                    using (SQLiteCommand command = connection.CreateCommand())
-                    {
-                        // Build the SQL command to delete data by ID
-                        command.CommandText = $"DELETE FROM TransactionTable WHERE TransactionID = @TransactionID";
-                        command.Parameters.AddWithValue("@TransactionID", transactionID);
-
-                        // Execute the SQL command to delete data
-                        int rowsDeleted = command.ExecuteNonQuery();
-
-                        // Check if any rows were deleted
-                        connection.Close();
-                        if (rowsDeleted > 0)
-                        {
-                            return true; // Deletion was successful
-                        }
-                    }
-                    connection.Close();
-                }
-
-                return false; // No rows were deleted
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error deleting transaction: " + ex.Message);
-                return false; // Deletion failed
-            }
-        }*/
-
         public static bool DeleteTransaction(string transactionID)
         {
             try

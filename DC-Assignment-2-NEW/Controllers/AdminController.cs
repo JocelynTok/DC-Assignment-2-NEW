@@ -25,6 +25,10 @@ namespace DC_Assignment_2_NEW.Controllers
         {
             return PartialView("../Admin/UserManagementView");
         }
-
+        [Route("adminManagement")]
+        public IActionResult GetAdminView()
+        {
+            return PartialView("../Admin/AdminManagementView");
+        }
     }
 }

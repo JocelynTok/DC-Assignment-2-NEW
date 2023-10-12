@@ -92,7 +92,7 @@ namespace DC_Assignment_2_NEW.Data
 
         private string GetRole()
         {
-            string[] rolesList = { "admin", "employee"};
+            string[] rolesList = { "admin", "user"};
             int randIndex = random.Next(0, rolesList.Length);
             return rolesList[randIndex];
         }

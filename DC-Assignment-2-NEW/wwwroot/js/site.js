@@ -62,6 +62,9 @@ function loadAdminView(status) {
     } else if (status === "user-management") {
         apiUrl = '/api/admin/userManagement';
         loadAllUsers();
+    } else if (status === "admin-management") {
+        apiUrl = '/api/admin/adminManagement';
+        loadAllAdmins();
     }
 
     console.log("Hello " + apiUrl);
@@ -482,6 +485,84 @@ function updateUserProfileAndAccount(oldEmail, newEmail, newPassword, newAddress
             console.error('Error updating user profile:', error);
         });
 }
+// ---------------------------------------------------------- Admin admin list view -----------------------------------------------------------------------
+function loadAllAdmins() {
+    fetch(`/api/userProfile`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(userProfileData => {
+            const tableBody = document.getElementById('admin-table-body');
+            tableBody.innerHTML = ''; // Clear existing rows
+            console.log(userProfileData);
+
+            userProfileData.forEach(data => {
+                console.log(data);
+
+                if (data.roles !== 'user') {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).textContent = data.username;
+                    row.insertCell(1).textContent = data.email;
+                    row.insertCell(2).textContent = data.passwordHash;
+                    row.insertCell(3).textContent = data.address;
+                    row.insertCell(4).textContent = data.phone;
+                    row.insertCell(5).textContent = data.accountNo;
+
+                    // Cell 6: Display balance (fetched from API)
+                    const cell6 = row.insertCell(6);
+                    cell6.id = 'balance-cell-' + data.accountNo; // Assign an ID for easy reference
+
+                    // Fetch balance based on accountNo
+                    fetch(`/api/account/${data.accountNo}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(accountData => {
+                            // Assuming accountData contains balance
+                            const balanceCell = document.getElementById('balance-cell-' + data.accountNo);
+                            balanceCell.textContent = accountData.balance;
+                        })
+                        .catch(error => {
+                            console.error('Fetch error:', error);
+                        });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+}
+
+//Hanlding user management search 
+function handleAdminSearch() {
+    const searchTerm = document.getElementById("search-bar").value.trim().toLowerCase();
+    const rows = document.getElementById("admin-table-body").getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        const email = rows[i].getElementsByTagName('td')[1].textContent.trim().toLowerCase();
+        if (email.includes(searchTerm)) {
+            rows[i].style.display = '';
+        } else {
+            rows[i].style.display = 'none';
+        }
+    }
+}
+
+//clear user search
+function clearAdminSearch() {
+    document.getElementById("search-bar").value = "";
+    const rows = document.getElementById("admin-table-body").getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = '';
+    }
+}
 
 // ---------------------------------------------------------- Admin user management view -----------------------------------------------------------------------
     function loadAllUsers() {
@@ -901,6 +982,7 @@ function updateUserProfileAndAccount(oldEmail, newEmail, newPassword, newAddress
                                 .then(accountResponse => {
                                     if (accountResponse.ok) {
                                         console.log(`Account associated with ${username} (${accountNo}) successfully deleted.`);
+                                        deleteTransactionsByAccount(accountNo)
                                     } else {
                                         console.error(`Error deleting account for ${username} (${accountNo}).`);
                                     }
@@ -923,6 +1005,48 @@ function updateUserProfileAndAccount(oldEmail, newEmail, newPassword, newAddress
                 console.error('Error fetching user profile:', userError);
             });
     }
+
+function deleteTransactionsByAccount(accountNo) {
+    // Fetch transactions by accountNo
+    console.log(accountNo);
+    fetch(`/api/transaction/account/${accountNo}`)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error('Error fetching transactions for accountNo:', accountNo);
+                throw new Error('Transactions not found');
+            }
+        })
+        .then(transactions => {
+            console.log('Transactions:', transactions);
+            // Loop through the transactions and delete each one
+            transactions.forEach(transaction => {
+                console.log(transaction);
+                deleteTransaction(transaction.transactionID);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching transactions:', error);
+        });
+}
+
+function deleteTransaction(transactionID) {
+    // Send a DELETE request to delete the transaction by transactionID
+    fetch(`/api/transaction/${transactionID}`, {
+        method: 'DELETE',
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Transaction with ID ${transactionID} successfully deleted.`);
+            } else {
+                console.error(`Error deleting transaction with ID ${transactionID}.`);
+            }
+        })
+        .catch(error => {
+            console.error(`Error deleting transaction with ID ${transactionID}:`, error);
+        });
+}
 
 // ---------------------------------------------------------- Admin transaction management view -----------------------------------------------------------------------
     function loadAllTransactions() {
