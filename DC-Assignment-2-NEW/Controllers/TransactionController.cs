@@ -15,9 +15,8 @@ namespace DC_Assignment_2_NEW.Controllers
             List<Transaction> transactions = DBManager.GetAllTransactions();
             return transactions;
         }
-        [HttpGet]
-        [Route("{transactionID}")]
-        public IActionResult GetTransaction(String transactionID)
+        [HttpGet("{transactionID}")]
+        public IActionResult GetTransaction(string transactionID)
         {
             Transaction transaction = DBManager.GetTransactionByID(transactionID);
             if (transaction == null)
@@ -25,6 +24,14 @@ namespace DC_Assignment_2_NEW.Controllers
                 return NotFound();
             }
             return Ok(transaction);
+        }
+
+        [HttpGet("account/{accountNo}")]
+        public IEnumerable<Transaction> GetTransactionByNo(string accountNo)
+        {
+            List <Transaction> transactionList= DBManager.GetTransactionsByNo(accountNo);
+       
+            return transactionList;
         }
         [HttpPost]
         public IActionResult PostTransaction([FromBody] Transaction transaction)

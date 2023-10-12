@@ -1,0 +1,40 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div id="main">
+    <h1> Transaction Management </h1>
+    <input type="text" id="search-bar" placeholder="Search by accountNo">
+    <button id="search-btn" onclick="handleSearch()">Search</button>
+    <!-- Clear Search Button -->
+    <button id="clear-search" onclick="clearSearch()">Clear Search</button>
+    <br />
+    <!-- Filter Buttons -->
+    <button id="filter-deposit" onclick="handleFilter('DEPOSIT')">Filter Deposits</button>
+    <button id="filter-withdrawal" onclick="handleFilter('WITHDRAW')">Filter Withdrawals</button>
+    <!-- Clear Filter Button -->
+    <button id="clear-filter" onclick="clearFilter()">Clear Filter</button>
+    <br/>
+    <!-- Sort Buttons -->
+    <button id="sort-asc" onclick="handleSort(true)">Sort Ascending</button>
+    <button id="sort-desc" onclick="handleSort(false)">Sort Descending</button>
+
+    <table id="transaction-table">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Transaction Type</th>
+                <th>Account No</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody id="transaction-table-body">
+            <!-- Transaction rows will be added here dynamically -->
+        </tbody>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/site.js"></script>
