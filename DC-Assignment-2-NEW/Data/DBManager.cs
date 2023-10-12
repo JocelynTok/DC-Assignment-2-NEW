@@ -52,7 +52,7 @@ namespace DC_Assignment_2_NEW.Data
                 {
                     connection.Open();
                     //Create a new SQLite command to execute SQL
-                    using(SQLiteCommand command = connection.CreateCommand())
+                    using (SQLiteCommand command = connection.CreateCommand())
                     {
                         //SQL Command to create a table named "Student Table"
                         command.CommandText = @"
@@ -63,14 +63,14 @@ namespace DC_Assignment_2_NEW.Data
                             AccountNo TEXT
                         )";
 
-                       command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
                         connection.Close();
                     }
                     Console.WriteLine("Table created successfully.");
                     return true;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
@@ -158,14 +158,14 @@ namespace DC_Assignment_2_NEW.Data
             return false; // Insertion failed
         }
 
-        public static bool InsertTransaction(Transaction transaction) 
+        public static bool InsertTransaction(Transaction transaction)
         {
             try
             {
-                using(SQLiteConnection connection = new SQLiteConnection(connectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
                 {
                     connection.Open();
-                    using(SQLiteCommand command = connection.CreateCommand())
+                    using (SQLiteCommand command = connection.CreateCommand())
                     {
                         command.CommandText = @"
                         INSERT INTO TransactionTable (TransactionID, TransactionType, Amount, AccountNo)
@@ -182,7 +182,7 @@ namespace DC_Assignment_2_NEW.Data
 
                         //check if any rows were inserted
                         connection.Close();
-                        if(rowsInserted > 0)
+                        if (rowsInserted > 0)
                         {
                             // Update the account's balance
                             UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, transaction.Amount);
@@ -192,7 +192,7 @@ namespace DC_Assignment_2_NEW.Data
                     connection.Close();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Error transaction: " + ex.Message);
             }
@@ -222,7 +222,7 @@ namespace DC_Assignment_2_NEW.Data
                         connection.Close();
                         if (rowsDeleted > 0)
                         {
-                           
+
                             return true; // Deletion was successful
                         }
                     }
@@ -310,12 +310,12 @@ namespace DC_Assignment_2_NEW.Data
                                 if (transactionType == "DEPOSIT")
                                 {
                                     // If it was a deposit, subtract the amount
-                                    UpdateAccountBalance(accountNo, "DEPOSIT",-amount);
+                                    UpdateAccountBalance(accountNo, "DEPOSIT", -amount);
                                 }
                                 else if (transactionType == "WITHDRAW")
                                 {
                                     // If it was a withdrawal, add back the amount
-                                    UpdateAccountBalance(accountNo,"WITHDRAW", -amount);
+                                    UpdateAccountBalance(accountNo, "WITHDRAW", -amount);
                                 }
 
                                 return true; // Deletion was successful
@@ -417,11 +417,11 @@ namespace DC_Assignment_2_NEW.Data
                                     {
                                         Console.WriteLine("Old Amount :" + oldAmount);
                                         Console.WriteLine("New Amount :" + transaction.Amount);
-                                        amountChange = oldAmount + transaction.Amount  ;
+                                        amountChange = oldAmount + transaction.Amount;
                                     }
                                     else if (transaction.TransactionType == "WITHDRAW")
                                     {
-                                        amountChange-= oldAmount;
+                                        amountChange -= oldAmount;
                                     }
                                 }
 
@@ -943,8 +943,30 @@ namespace DC_Assignment_2_NEW.Data
 
         public static void DBInitialize()
         {
+            DBGenerator generator = new DBGenerator();
+            int initialAccountNo = 20;
+            //change this to change the amount of initial accounts created
+
             if (CreateTable())
             {
+                int balance = 0;
+                string accountNumber = "", username = "", email = "";
+
+                Account account;
+                for (int i = 0; i < initialAccountNo; i++)
+                {
+                    account = new Account();
+                    generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                    account.AccountNo = accountNumber;
+                    account.Username = username;
+                    account.Email = email;
+                    account.Balance = balance;
+
+                    //Console.WriteLine(account.AccountToString());
+                    Insert(account);
+                }
+
+                /*
                 Account account = new Account();
                 account.AccountNo = "123456789";
                 account.Username = "Shu Man";
@@ -968,12 +990,83 @@ namespace DC_Assignment_2_NEW.Data
                 account.Balance = 1500;
 
                 Insert(account);
+                */
 
+
+            }
+
+
+            if (CreateUserProfileTable())
+            {
+                UserProfile userProfile = new UserProfile();
+
+                List<Account> accounts = GetAll();
+                foreach (Account account in accounts)
+                {
+                    //for each account, we create the rest of the profile based on that account and insert it into the db
+                    UserProfile user = generator.GetNextUserProfile(account);
+                    //Console.WriteLine(user.ProfileToString());
+                    InsertUserProfile(user);
+                }
+
+                /*
+                userProfile.Username = "Shu Man";
+                userProfile.Email = "shuman@gmail.com";
+                userProfile.Address = "Miri,Sarawak";
+                userProfile.Phone = "60102827568";
+                userProfile.PictureUrl = "https://www.pexels.com/photo/turned-on-bokeh-light-370799/";
+                userProfile.PasswordHash = "shuman_password";
+                userProfile.AccountNo = "123456789";
+                userProfile.Roles = "admin";
+
+                InsertUserProfile(userProfile);
+
+                userProfile.Username = "Jasmine";
+                userProfile.Email = "jasmine@gmail.com";
+                userProfile.Address = "Miri,Sarawak";
+                userProfile.Phone = "60138928158";
+                userProfile.PictureUrl = "https://www.pexels.com/photo/yellow-bokeh-photo-949587/";
+                userProfile.PasswordHash = "jasmine_password";
+                userProfile.AccountNo = "223456789";
+                userProfile.Roles = "employee";
+
+                InsertUserProfile(userProfile);
+
+                userProfile.Username = "Jia Yi";
+                userProfile.Email = "jiayi@gmail.com";
+                userProfile.Address = "Miri,Sarawak";
+                userProfile.Phone = "60138336623";
+                userProfile.PictureUrl = "https://www.pexels.com/photo/defocused-image-of-lights-255379/";
+                userProfile.PasswordHash = "jiayi_password";
+                userProfile.AccountNo = "323456789";
+                userProfile.Roles = "employee";
+
+                InsertUserProfile(userProfile);
+                */
             }
 
             if (CreateTransactionTable())
             {
+                Transaction transaction = new Transaction();
 
+                List<Account> accounts = GetAll();
+                foreach (Account account in accounts)
+                {
+                    //create a transaction for each account
+                    string transactionID = "", transactionType = "", accountNo = "";
+                    int amount = 0;
+                    //for each account, we create the rest of the profile based on that account and insert it into the db
+                    generator.GetNextTransaction(out transactionID, out transactionType, out amount);
+
+                    transaction.TransactionID = transactionID;
+                    transaction.TransactionType = transactionType;
+                    transaction.Amount = amount;
+                    transaction.AccountNo = account.AccountNo;
+
+                    //Console.WriteLine(user.ProfileToString());
+                    InsertTransaction(transaction);
+                }
+                /*
                 Transaction transaction = new Transaction();
                 transaction.TransactionID = "1";
                 transaction.TransactionType = "DEPOSIT";
@@ -997,47 +1090,10 @@ namespace DC_Assignment_2_NEW.Data
                 transaction.AccountNo = "323456789";
 
                 InsertTransaction(transaction);
-
+                */
             }
 
-            if (CreateUserProfileTable())
-            {
-                UserProfile userProfile = new UserProfile();
-
-                userProfile.Username = "Shu Man";
-                userProfile.Email = "shuman@gmail.com";
-                userProfile.Address = "Miri,Sarawak";
-                userProfile.Phone = "60102827568";
-                userProfile.PictureUrl = "https://www.pexels.com/photo/turned-on-bokeh-light-370799/";
-                userProfile.PasswordHash = "shuman_password";
-                userProfile.AccountNo = "123456789";
-                userProfile.Roles = "admin";
-
-                InsertUserProfile(userProfile);
-
-                userProfile.Username = "Jasmine";
-                userProfile.Email = "jasmine@gmail.com";
-                userProfile.Address = "Miri,Sarawak";
-                userProfile.Phone = "60138928158";
-                userProfile.PictureUrl = "https://www.pexels.com/photo/yellow-bokeh-photo-949587/";
-                userProfile.PasswordHash = "jasmine_password";
-                userProfile.AccountNo = "223456789";
-                userProfile.Roles = "user";
-
-                InsertUserProfile(userProfile);
-
-                userProfile.Username = "Jia Yi";
-                userProfile.Email = "jiayi@gmail.com";
-                userProfile.Address = "Miri,Sarawak";
-                userProfile.Phone = "60138336623";
-                userProfile.PictureUrl = "https://www.pexels.com/photo/defocused-image-of-lights-255379/";
-                userProfile.PasswordHash = "jiayi_password";
-                userProfile.AccountNo = "323456789";
-                userProfile.Roles = "user";
-
-                InsertUserProfile(userProfile);
-
-            }
         }
+
     }
 }

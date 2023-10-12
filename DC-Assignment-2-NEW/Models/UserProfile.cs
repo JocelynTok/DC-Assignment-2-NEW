@@ -11,5 +11,30 @@
         public string PasswordHash { get; set; } // Hashed password
         public string AccountNo { get; set; } // User's bank account number
         public string Roles { get; set; } // User's role (admin or employee)
+    
+        public UserProfile()
+        {
+            Username = "";
+            Email = "";
+            Address = "";
+            Phone = "";
+            PictureUrl = "";
+            PasswordHash = "";
+            AccountNo = "";
+            Roles = "";
+        }
+
+        public String ProfileToString()
+        {
+            string prompt = "Username: " + Username +
+                "\nEmail: " + Email +
+                "\nAddress: " + Address +
+                "\nPhone: " + Phone +
+                "\nPictureUrl: " + PictureUrl +
+                "\nPasswordHash: " + PasswordHash +
+                "\nAccountNo: " + AccountNo +
+                "\nRoles: " + Roles + "\n";
+            return prompt;
+        }
     }
 }
