@@ -6,5 +6,7 @@
         public string TransactionType { get; set; } //type: deposit or withdrawal
         public int Amount { get; set; }
         public string AccountNo { get; set; }
+        public String TransactionDate { get; set; }
+        public string Description { get; set; }
     }
 }

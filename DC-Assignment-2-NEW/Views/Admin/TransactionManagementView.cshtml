@@ -7,27 +7,34 @@
 <div id="main">
     <h1> Transaction Management </h1>
     <input type="text" id="search-bar" placeholder="Search by accountNo">
-    <button id="search-btn" onclick="handleSearch()">Search</button>
+    <button id="search-btn" class="standard-button" onclick="handleSearch()">Search</button>
     <!-- Clear Search Button -->
-    <button id="clear-search" onclick="clearSearch()">Clear Search</button>
+    <button id="clear-search" class="standard-button" onclick="clearSearch()">Clear Search</button>
     <br />
     <!-- Filter Buttons -->
-    <button id="filter-deposit" onclick="handleFilter('DEPOSIT')">Filter Deposits</button>
-    <button id="filter-withdrawal" onclick="handleFilter('WITHDRAW')">Filter Withdrawals</button>
+    <button id="filter-deposit" class="standard-button" onclick="handleFilter('DEPOSIT')">Filter Deposits</button>
+    <button id="filter-withdrawal" class="standard-button" onclick="handleFilter('WITHDRAW')">Filter Withdrawals</button>
     <!-- Clear Filter Button -->
-    <button id="clear-filter" onclick="clearFilter()">Clear Filter</button>
+    <button id="clear-filter" class="standard-button" onclick="clearFilter()">Clear Filter</button>
     <br/>
     <!-- Sort Buttons -->
-    <button id="sort-asc" onclick="handleSort(true)">Sort Ascending</button>
-    <button id="sort-desc" onclick="handleSort(false)">Sort Descending</button>
+    <button id="sort-asc" class="standard-button" onclick="handleSort(true)">Sort Ascending</button>
+    <button id="sort-desc" class="standard-button" onclick="handleSort(false)">Sort Descending</button>
+    <!-- Sort By Date Buttons -->
+    <br />
+    <button id="sort-date-asc" class="standard-button" onclick="handleDateSort(true)">Sort By Most Recent</button>
+    <button id="sort-date-desc" class="standard-button" onclick="handleDateSort(false)">Sort By Oldest</button>
 
-    <table id="transaction-table">
+
+    <table id="transaction-table" style="width:110%">
         <thead>
             <tr>
                 <th>Transaction ID</th>
                 <th>Transaction Type</th>
                 <th>Account No</th>
                 <th>Amount</th>
+                <th>Transaction Date</th>
+                <th>Description</th>
             </tr>
         </thead>
         <tbody id="transaction-table-body">

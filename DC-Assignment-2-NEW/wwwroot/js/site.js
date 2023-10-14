@@ -314,6 +314,9 @@ function loadTransactions() {
                             row.insertCell(1).textContent = transaction.transactionType;
                             row.insertCell(2).textContent = transaction.accountNo;
                             row.insertCell(3).textContent = transaction.amount;
+                            row.insertCell(4).textContent = transaction.transactionDate;
+                            row.insertCell(5).textContent = transaction.description;
+
                         });
                     })
                     .catch(error => {
@@ -1070,6 +1073,8 @@ function deleteTransaction(transactionID) {
                     row.insertCell(1).textContent = transaction.transactionType;
                     row.insertCell(2).textContent = transaction.accountNo;
                     row.insertCell(3).textContent = transaction.amount;
+                    row.insertCell(4).textContent = transaction.transactionDate;
+                    row.insertCell(5).textContent = transaction.description;
                 });
             })
             .catch(error => {
@@ -1086,6 +1091,22 @@ function deleteTransaction(transactionID) {
         for (let i = 0; i < rows.length; i++) {
             const accountNo = rows[i].getElementsByTagName('td')[2].textContent.trim().toLowerCase();
             if (accountNo.includes(searchTerm)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+}
+
+    //handle transaction search by date range
+    function handleDateSearch() {
+        const startDate = new Date(document.getElementById("search-start-date"));
+        const endDate = new Date(document.getElementById("search-end-date"));
+        const rows = document.getElementById("transaction-table-body").getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const tempDate = new Date(rows[i].getElementsByTagName('td')[4].textContent);
+            if ((tempDate.getTime() >= startDate.getTime()) && (tempDate.getTime() <= endDate.getTime())) {
                 rows[i].style.display = '';
             } else {
                 rows[i].style.display = 'none';
@@ -1115,6 +1136,21 @@ function deleteTransaction(transactionID) {
         rows.sort((a, b) => {
             const amountA = parseFloat(a.getElementsByTagName('td')[3].textContent);
             const amountB = parseFloat(b.getElementsByTagName('td')[3].textContent);
+            return sortFactor * (amountA - amountB);
+        });
+
+        const tbody = document.getElementById("transaction-table-body");
+        rows.forEach(row => tbody.appendChild(row));
+}
+
+    //handling date sort ascending / descending
+    function handleDateSort(ascending) {
+        const rows = Array.from(document.getElementById("transaction-table-body").getElementsByTagName('tr'));
+        const sortFactor = ascending ? 1 : -1;
+
+        rows.sort((a, b) => {
+            const amountA = new Date(a.getElementsByTagName('td')[4].textContent);
+            const amountB = new Date(b.getElementsByTagName('td')[4].textContent);
             return sortFactor * (amountA - amountB);
         });
 
