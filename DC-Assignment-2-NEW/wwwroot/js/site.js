@@ -1100,13 +1100,13 @@ function deleteTransaction(transactionID) {
 
     //handle transaction search by date range
     function handleDateSearch() {
-        const startDate = new Date(document.getElementById("search-start-date"));
-        const endDate = new Date(document.getElementById("search-end-date"));
+        const startDate = new Date(document.getElementById("start-date-bar") + ", 00:00:00");
+        const endDate = new Date(document.getElementById("end-date-bar") + ", 00:00:00");
         const rows = document.getElementById("transaction-table-body").getElementsByTagName('tr');
 
         for (let i = 0; i < rows.length; i++) {
             const tempDate = new Date(rows[i].getElementsByTagName('td')[4].textContent);
-            if ((tempDate.getTime() >= startDate.getTime()) && (tempDate.getTime() <= endDate.getTime())) {
+            if ((tempDate >= startDate) && (tempDate <= endDate)) {
                 rows[i].style.display = '';
             } else {
                 rows[i].style.display = 'none';

@@ -20,6 +20,15 @@
     <!-- Sort Buttons -->
     <button id="sort-asc" class="standard-button" onclick="handleSort(true)">Sort Ascending</button>
     <button id="sort-desc" class="standard-button" onclick="handleSort(false)">Sort Descending</button>
+
+    <!-- Search Date Range Buttons -->
+    <br />
+    <label class="standard-button" for="search-start-date">Start Date: </label>
+    <input class="standard-button" type="date" id="start-date-bar">
+    <label class="standard-button" for="search-end-date">  End Date: </label>
+    <input class="standard-button" type="date" id="end-date-bar">
+    <button id="search-date-btn" class="standard-button" onclick="handleDateSearch()">Search Date Range</button>
+
     <!-- Sort By Date Buttons -->
     <br />
     <button id="sort-date-asc" class="standard-button" onclick="handleDateSort(true)">Sort By Most Recent</button>
