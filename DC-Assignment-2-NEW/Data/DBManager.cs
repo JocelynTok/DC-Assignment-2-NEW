@@ -180,7 +180,7 @@ namespace DC_Assignment_2_NEW.Data
                         command.Parameters.AddWithValue("@Amount", transaction.Amount);
                         command.Parameters.AddWithValue("@AccountNo", transaction.AccountNo);
                         //String formattedDate = transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm:ss");
-                        command.Parameters.AddWithValue("@TransactionDate", transaction.TransactionDate);
+                        command.Parameters.AddWithValue("@TransactionDate", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
 
                         command.Parameters.AddWithValue("@Description", transaction.Description);
 

@@ -348,15 +348,17 @@ function loadCreateTransaction() {
         const amount = document.getElementById("amount").value;
         //console.log(transactionType + document.getElementById("amount").value);
 
+        const description1 = document.getElementById("description").value;
+
         const accountID = document.getElementById("acctNo").innerText;
         console.log(accountID);
         //create new transaction
-        addNewTransaction(accountID, transactionType, amount);
+        addNewTransaction(accountID, transactionType, amount, description1);
         
         modal.style.display = 'none';
         dropdown.selectedIndex = 0;
         document.getElementById("amount").value = '';
-
+        document.getElementById("description").value = "";
 
     });
 
@@ -366,44 +368,43 @@ function loadCreateTransaction() {
         modal.style.display = 'none';
         dropdown.selectedIndex = 0;
         document.getElementById("amount").value = '';
+        document.getElementById("description").value = "";
     });
 }
 
 
 // Function to update the user profile and account  (admin/user)
-function addNewTransaction(accountID, transactionType, amount) {
+function addNewTransaction(accountID, transactionType, amount, description1) {
 
-    var jsonLength;
+    let jsonLength;
 
     // Fetch the existing user profile based on the old email
+    /*
     fetch(`/api/transaction/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error('Error accessing transaction page');
-                throw new Error('Failed to access transaction api');
-            }
-        })
-        .then((json) => console.log(json))
+        .then(response => response.json()
+        )
+        .then((json) => { jsonLength = json.length })
         .catch(error => {
             console.error('Error creating new transaction:', error);
         });
-
+    
+    console.log("Length" +jsonLength);
+   */
 
         //new transaction
     const createdTransaction = {
-        transactionID: "36",
+        transactionID: "123",
         transactionType: transactionType,
         amount: amount,
         accountNo: accountID,
-        transactionDate: "10/15/2023 20:01:48",
-        description: ""
+        transactionDate: "",
+        //this will be filled in insert transaction
+        description: description1
 
     };
 
