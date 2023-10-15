@@ -1,17 +1,21 @@
-html {
-  font-size: 14px;
-}
+<!DOCTYPE html >
+<html >
+<head >
+    <style >
+        html {
+            font-size: 14px;
+        }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
+        @media (min-width: 768px) {
+            html {
+                font-size: 16px;
+            }
+        }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
+        html {
+            position: relative;
+            min-height: 100%;
+        }
 
 body {
   margin-bottom: 60px;
