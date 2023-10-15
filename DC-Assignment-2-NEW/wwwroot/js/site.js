@@ -729,6 +729,37 @@ function clearAdminSearch() {
                                 if (response.ok) {
                                     console.log('Account created successfully');
 
+                                    const newUser = {
+                                        Username: newUsername,
+                                        // Add other properties as needed
+                                    };
+
+                                    // Define the API endpoint URL
+                                    const apiUrl = '/api/admin/admincreateUser';
+
+                                    // Define the request options, including the HTTP method and headers
+                                    const requestOptions = {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json', // Specify the content type as JSON
+                                            // Add any other headers you need here
+                                        },
+                                        body: JSON.stringify(newUser), // Convert the data object to a JSON string
+                                    };
+
+                                    // Send the POST request to create the user
+                                    fetch(apiUrl, requestOptions)
+                                        .then(response => {
+                                            if (response.ok) {
+                                                console.log('Create Activity sucessfully logged');
+                                                // Perform any further actions after user creation
+                                            } else {
+                                                console.error('Error logging create activity');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Create user request error:', error);
+                                        });
                                 } else {
                                     console.error('Error creating account');
                                 }
@@ -877,7 +908,7 @@ function clearAdminSearch() {
     //update account when userProfile was modified
     function updateAccount(newEmail, AccountNo) {
 
-
+        let username_st = "";
         // Fetch the existing user profile based on the old email
         fetch(`/api/account/${AccountNo}`)
             .then(response => {
@@ -898,6 +929,7 @@ function clearAdminSearch() {
                     balance: accountData.balance
                 };
 
+                username_st = accountData.username;
 
                 // Send an HTTP PUT request to update the user profile
                 return fetch(`/api/account`, {
@@ -913,6 +945,37 @@ function clearAdminSearch() {
                     console.log('Account updated successfully');
                     loadAllUsers();
 
+                    const updatedUser = {
+                        Username: username_st,
+                        // Add other properties as needed
+                    };
+
+                    // Define the API endpoint URL
+                    const apiUrl = '/api/admin/adminupdateUser';
+
+                    // Define the request options, including the HTTP method and headers
+                    const requestOptions = {
+                        method: 'POST',  // This should be 'POST' to update the user
+                        headers: {
+                            'Content-Type': 'application/json',  // Specify the content type as JSON
+                            // Add any other headers you need here
+                        },
+                        body: JSON.stringify(updatedUser),  // Convert the updated user data to a JSON string
+                    };
+
+                    // Send the POST request to update the user
+                    fetch(apiUrl, requestOptions)
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Update Activity sucessfully logged');
+                                // Perform any further actions after user creation
+                            } else {
+                                console.error('Error logging update activity');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Update user request error:', error);
+                        });
                 } else {
                     console.error('Error updating account');
                 }
@@ -983,6 +1046,32 @@ function clearAdminSearch() {
                                     if (accountResponse.ok) {
                                         console.log(`Account associated with ${username} (${accountNo}) successfully deleted.`);
                                         deleteTransactionsByAccount(accountNo)
+
+                                        const apiUrl = `/api/admin/admindeleteUser?username=${username}`;
+
+                                        // Define the request options, including the HTTP method and headers
+                                        const requestOptions = {
+                                            method: 'POST',  // This should be 'POST' to delete the user
+                                            headers: {
+                                                'Content-Type': 'application/json',  // Specify the content type as JSON
+                                                // Add any other headers you need here
+                                            },
+                                          
+                                        };
+
+                                        // Send the POST request to delete the user
+                                        fetch(apiUrl, requestOptions)
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    console.log('Delete Activity sucessfully logged');
+                                                    // Perform any further actions after user creation
+                                                } else {
+                                                    console.error('Error logging delete activity');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Delete user request error:', error);
+                                            });
                                     } else {
                                         console.error(`Error deleting account for ${username} (${accountNo}).`);
                                     }
