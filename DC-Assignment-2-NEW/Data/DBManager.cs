@@ -60,7 +60,9 @@ namespace DC_Assignment_2_NEW.Data
                             TransactionID TEXT,
                             TransactionType TEXT,
                             Amount INTEGER,
-                            AccountNo TEXT
+                            AccountNo TEXT,
+                            TransactionDate TEXT,
+                            Description TEXT
                         )";
 
                         command.ExecuteNonQuery();
@@ -168,8 +170,8 @@ namespace DC_Assignment_2_NEW.Data
                     using (SQLiteCommand command = connection.CreateCommand())
                     {
                         command.CommandText = @"
-                        INSERT INTO TransactionTable (TransactionID, TransactionType, Amount, AccountNo)
-                        VALUES (@TransactionID, @TransactionType, @Amount, @AccountNo)
+                        INSERT INTO TransactionTable (TransactionID, TransactionType, Amount, AccountNo, TransactionDate, Description)
+                        VALUES (@TransactionID, @TransactionType, @Amount, @AccountNo, @TransactionDate, @Description)
                         ";
 
                         //define transaction parameters
@@ -177,6 +179,10 @@ namespace DC_Assignment_2_NEW.Data
                         command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                         command.Parameters.AddWithValue("@Amount", transaction.Amount);
                         command.Parameters.AddWithValue("@AccountNo", transaction.AccountNo);
+                        //String formattedDate = transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm:ss");
+                        command.Parameters.AddWithValue("@TransactionDate", transaction.TransactionDate);
+
+                        command.Parameters.AddWithValue("@Description", transaction.Description);
 
                         int rowsInserted = command.ExecuteNonQuery();
 
@@ -356,10 +362,13 @@ namespace DC_Assignment_2_NEW.Data
                         // Build the SQL command to update data by ID
                         using (SQLiteCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = "UPDATE TransactionTable SET TransactionType = @TransactionType, Amount = @Amount WHERE TransactionID = @TransactionID";
+                            command.CommandText = "UPDATE TransactionTable SET TransactionType = @TransactionType, Amount = @Amount, TransactionDate = @TransactionDate, Description = @Description WHERE TransactionID = @TransactionID";
                             command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
                             command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                             command.Parameters.AddWithValue("@Amount", transaction.Amount);
+                            command.Parameters.AddWithValue("@TransactionDate", transaction.TransactionDate);
+                            command.Parameters.AddWithValue("@Description", transaction.Description);
+                           
 
                             // Execute the SQL command to update data
                             int rowsUpdated = command.ExecuteNonQuery();
@@ -546,6 +555,8 @@ namespace DC_Assignment_2_NEW.Data
                                 transaction.TransactionType = reader["TransactionType"].ToString();
                                 transaction.Amount = Convert.ToInt32(reader["Amount"]);
                                 transaction.AccountNo = reader["AccountNo"].ToString();
+                                transaction.TransactionDate = reader["TransactionDate"].ToString();
+                                transaction.Description = reader["Description"].ToString();
 
                                 // Create a Student object and add it to the list
                                 transactionList.Add(transaction);
@@ -634,6 +645,8 @@ namespace DC_Assignment_2_NEW.Data
                                 transaction.TransactionType = reader["TransactionType"].ToString();
                                 transaction.Amount = Convert.ToInt32(reader["Amount"]);
                                 transaction.AccountNo = reader["AccountNo"].ToString();
+                                transaction.TransactionDate = reader["TransactionDate"].ToString();
+                                transaction.Description = reader["Description"].ToString();
                             }
                         }
                     }
@@ -672,8 +685,12 @@ namespace DC_Assignment_2_NEW.Data
                                     AccountNo = reader["AccountNo"].ToString(),
                                     TransactionID = reader["TransactionID"].ToString(),
                                     TransactionType = reader["TransactionType"].ToString(),
-                                    Amount = Convert.ToInt32(reader["Amount"])
+                                    Amount = Convert.ToInt32(reader["Amount"]),
+                                    TransactionDate = reader["TransactionDate"].ToString(),
+                                    Description = reader["Description"].ToString()
+
                                 };
+                           
 
                                 transactionList.Add(transaction);
                             }
@@ -939,6 +956,33 @@ namespace DC_Assignment_2_NEW.Data
                 int balance = 0;
                 string accountNumber = "", username = "", email = "";
 
+                //setting admin accounts
+                Account adminAccount = new Account();
+                generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                adminAccount.AccountNo = accountNumber;
+                adminAccount.Username = "Shu Man";
+                adminAccount.Email = "shuman_admin@gmail.com";
+                adminAccount.Balance = balance;
+                Insert(adminAccount);
+
+                adminAccount = new Account();
+                generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                adminAccount.AccountNo = accountNumber;
+                adminAccount.Username = "JasmineC";
+                adminAccount.Email = "jasmine_admin@gmail.com";
+                adminAccount.Balance = balance;
+                Insert(adminAccount);
+
+                adminAccount = new Account();
+                generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                adminAccount.AccountNo = accountNumber;
+                adminAccount.Username = "Jia Yi";
+                adminAccount.Email = "jiayi_admin@gmail.com";
+                adminAccount.Balance = balance;
+                Insert(adminAccount);
+
+
+                // Inserting random user accounts
                 Account account;
                 for (int i = 0; i < initialAccountNo; i++)
                 {
@@ -953,31 +997,6 @@ namespace DC_Assignment_2_NEW.Data
                     Insert(account);
                 }
 
-                /*
-                Account account = new Account();
-                account.AccountNo = "123456789";
-                account.Username = "Shu Man";
-                account.Email = "shuman@gmail.com";
-                account.Balance = 1300;
-
-                Insert(account);
-
-                account = new Account();
-                account.AccountNo = "223456789";
-                account.Username = "Jasmine";
-                account.Email = "jasmine@gmail.com";
-                account.Balance = 1400;
-
-                Insert(account);
-
-                account = new Account();
-                account.AccountNo = "323456789";
-                account.Username = "Jia Yi";
-                account.Email = "jiayi@gmail.com";
-                account.Balance = 1500;
-
-                Insert(account);
-                */
 
 
             }
@@ -990,48 +1009,30 @@ namespace DC_Assignment_2_NEW.Data
                 List<Account> accounts = GetAll();
                 foreach (Account account in accounts)
                 {
-                    //for each account, we create the rest of the profile based on that account and insert it into the db
-                    UserProfile user = generator.GetNextUserProfile(account);
-                    //Console.WriteLine(user.ProfileToString());
-                    InsertUserProfile(user);
+                    string accountNo = account.AccountNo;
+                    //we set the 3 initial accounts of admin to admin
+                    if (accountNo.Equals("100000001") || accountNo.Equals("100000002") || accountNo.Equals("100000003"))
+                    {
+                        UserProfile user = generator.GetNextUserProfile(account);
+                        user.PasswordHash = "1234";
+                        user.Roles = "admin";
+                        InsertUserProfile(user);
+                    }
+                    else
+                    {
+
+                        //for each account, we create the rest of the profile based on that account and insert it into the db
+                        UserProfile user = generator.GetNextUserProfile(account);
+                        //Console.WriteLine(user.ProfileToString());
+                        InsertUserProfile(user);
+                    }
                 }
 
-                /*
-                userProfile.Username = "Shu Man";
-                userProfile.Email = "shuman@gmail.com";
-                userProfile.Address = "Miri,Sarawak";
-                userProfile.Phone = "60102827568";
-                userProfile.PictureUrl = "https://www.pexels.com/photo/turned-on-bokeh-light-370799/";
-                userProfile.PasswordHash = "shuman_password";
-                userProfile.AccountNo = "123456789";
-                userProfile.Roles = "admin";
-
-                InsertUserProfile(userProfile);
-
-                userProfile.Username = "Jasmine";
-                userProfile.Email = "jasmine@gmail.com";
-                userProfile.Address = "Miri,Sarawak";
-                userProfile.Phone = "60138928158";
-                userProfile.PictureUrl = "https://www.pexels.com/photo/yellow-bokeh-photo-949587/";
-                userProfile.PasswordHash = "jasmine_password";
-                userProfile.AccountNo = "223456789";
-                userProfile.Roles = "employee";
-
-                InsertUserProfile(userProfile);
-
-                userProfile.Username = "Jia Yi";
-                userProfile.Email = "jiayi@gmail.com";
-                userProfile.Address = "Miri,Sarawak";
-                userProfile.Phone = "60138336623";
-                userProfile.PictureUrl = "https://www.pexels.com/photo/defocused-image-of-lights-255379/";
-                userProfile.PasswordHash = "jiayi_password";
-                userProfile.AccountNo = "323456789";
-                userProfile.Roles = "employee";
-
-                InsertUserProfile(userProfile);
-                */
+                
+ 
             }
 
+            
             if (CreateTransactionTable())
             {
                 Transaction transaction = new Transaction();
@@ -1042,6 +1043,7 @@ namespace DC_Assignment_2_NEW.Data
                     //create a transaction for each account
                     string transactionID = "", transactionType = "", accountNo = "";
                     int amount = 0;
+                    
                     //for each account, we create the rest of the profile based on that account and insert it into the db
                     generator.GetNextTransaction(out transactionID, out transactionType, out amount);
 
@@ -1049,36 +1051,15 @@ namespace DC_Assignment_2_NEW.Data
                     transaction.TransactionType = transactionType;
                     transaction.Amount = amount;
                     transaction.AccountNo = account.AccountNo;
+                    transaction.TransactionDate = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
+                    transaction.Description = "Pre-generated Transaction Example";
 
                     //Console.WriteLine(user.ProfileToString());
                     InsertTransaction(transaction);
                 }
-                /*
-                Transaction transaction = new Transaction();
-                transaction.TransactionID = "1";
-                transaction.TransactionType = "DEPOSIT";
-                transaction.Amount = 10000000;
-                transaction.AccountNo = "123456789";
 
-                InsertTransaction(transaction);
-
-                transaction = new Transaction();
-                transaction.TransactionID = "2";
-                transaction.TransactionType = "DEPOSIT";
-                transaction.Amount = 12452;
-                transaction.AccountNo = "223456789";
-
-                InsertTransaction(transaction);
-
-                transaction = new Transaction();
-                transaction.TransactionID = "3";
-                transaction.TransactionType = "WITHDRAW";
-                transaction.Amount = 1400;
-                transaction.AccountNo = "323456789";
-
-                InsertTransaction(transaction);
-                */
             }
+            
 
         }
 

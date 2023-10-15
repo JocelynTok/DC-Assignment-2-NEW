@@ -11,13 +11,16 @@ namespace DC_Assignment_2_NEW.Data
         private Random random;
         private int accountNoCount;
         private int transactionIDcount;
+        private int uniqueNumber;
+        
         
 
         public DBGenerator()
         {
             random = new Random();
-            accountNoCount = 99;
+            accountNoCount = 100000000;
             transactionIDcount = 0;
+            uniqueNumber = 0;
         }
 
         // ---------------Account Use ------------------------
@@ -50,7 +53,8 @@ namespace DC_Assignment_2_NEW.Data
         public void GetNextAccount(out string accountNo, out string username, out string accountEmail, out int balance)
         {
             accountNo = NextAccountNo();
-            username = RandomName();
+            username = RandomName() +uniqueNumber;
+            uniqueNumber++;
             string tempEmail = username + RandomEmailExtension();
             accountEmail = String.Concat(tempEmail.Where(c => !Char.IsWhiteSpace(c)));
             balance = RandomBalance();
@@ -108,7 +112,7 @@ namespace DC_Assignment_2_NEW.Data
             user.PictureUrl = GetPicture();
             user.PasswordHash = GetPassword();
             user.AccountNo = account.AccountNo;
-            user.Roles = GetRole();
+            user.Roles = "user";
 
             return user;
         }
@@ -137,7 +141,9 @@ namespace DC_Assignment_2_NEW.Data
             transactionID = GetNextTransactionID();
             transactionType = GetTransactionType();
             amount = GetAmount();
+            
         }
 
+        
     }
 }
