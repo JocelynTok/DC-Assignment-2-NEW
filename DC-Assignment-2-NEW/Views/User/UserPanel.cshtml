@@ -20,11 +20,32 @@
         <label>Balance: <span id="balance"></span></label>
         <br/>
         <button id="history" onclick="loadUserView('transaction-history')"> View Transaction History </button>
-        <button id="transaction"> Make A Transaction </button>
+        <button id="transaction" onclick="loadCreateTransaction()"> Make A Transaction </button>
         <button id="transfer"> Make A Transfer </button>
     </div>
     <div id="content">
     </div>
     </div>
+
+````<div id="create-transaction" class="modal">
+        <div class="modal-content">
+        <h2 class="form-field">Create New Transaction</h2>
+            <form id="createTransactionForm">
+            <label for="transaction-type" class="form-field">Transaction Type:</label>
+                <select id="transaction-type" class="form-field" name="transaction-type-name">
+                    <option>DEPOSIT</option>
+                    <option>WITHDRAW</option>
+                </select>
+                    <br>
+
+            <label for="amount" class="form-field">Amount:</label>
+                <input type="number" id="amount" name="amount-name" ><br>
+
+            <button type="button" class="form-field" id="confirm-transaction">Create Transaction</button>
+            <button type="button" class="form-field" id="cancel-transaction"> Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/js/site.js"></script>
