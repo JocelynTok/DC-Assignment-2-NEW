@@ -69,13 +69,13 @@ namespace DC_Assignment_2_NEW.Controllers
 
         [HttpPost]
         [Route("admindeleteUser")]
-        public IActionResult DeleteUser(int userId)
+        public IActionResult DeleteUser(string username)
         {
             // Perform delete user logic
 
             // Log the admin activity
             string adminUsername = DBManager.GetCurrentAdminByRole();
-            AuditLogger.LogActivity(adminUsername, $"Deleted user {userId}");
+            AuditLogger.LogActivity(adminUsername, $"Deleted user {username}");
 
             return Ok();
         }
