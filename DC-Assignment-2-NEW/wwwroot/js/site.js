@@ -1090,7 +1090,7 @@ function deleteTransaction(transactionID) {
 
         for (let i = 0; i < rows.length; i++) {
             const accountNo = rows[i].getElementsByTagName('td')[2].textContent.trim().toLowerCase();
-            if (accountNo.includes(searchTerm)) {
+            if (accountNo.localeCompare(searchTerm) === 0) {
                 rows[i].style.display = '';
             } else {
                 rows[i].style.display = 'none';
@@ -1100,18 +1100,23 @@ function deleteTransaction(transactionID) {
 
     //handle transaction search by date range
     function handleDateSearch() {
-        const startDate = new Date(document.getElementById("start-date-bar") + ", 00:00:00");
-        const endDate = new Date(document.getElementById("end-date-bar") + ", 00:00:00");
+        const startDate = new Date(document.getElementById("start-date-bar").value + ", 00:00:00");
+        //the .value is important to get the value of the date inputted
+        const endDate = new Date(document.getElementById("end-date-bar").value + ", 00:00:00");
+        //console.log(startDate + " " +endDate);
         const rows = document.getElementById("transaction-table-body").getElementsByTagName('tr');
 
+        
         for (let i = 0; i < rows.length; i++) {
             const tempDate = new Date(rows[i].getElementsByTagName('td')[4].textContent);
             if ((tempDate >= startDate) && (tempDate <= endDate)) {
+                // do >= <= instead of only === bc we have DateTime instead of just Date
                 rows[i].style.display = '';
             } else {
                 rows[i].style.display = 'none';
             }
         }
+        
     }
 
     //handling filter by trasnaction type
@@ -1172,3 +1177,99 @@ function deleteTransaction(transactionID) {
         document.getElementById("search-bar").value = ''; // Clear the search input
         clearFilter(); // Also clear any previous filter
     }
+
+    // ---------------- Transactions page for USER only --------------------------------
+    //handle transaction search by accountNo in user
+    function handleUserSearch() {
+        const searchTerm = document.getElementById("user-search-bar").value.trim().toLowerCase();
+        const rows = document.getElementById("transactionTableBody").getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const accountNo = rows[i].getElementsByTagName('td')[2].textContent.trim().toLowerCase();
+            if (accountNo.localeCompare(searchTerm) === 0) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+}
+
+    //handle transaction search by date range
+    function handleUserDateSearch() {
+        const startDate = new Date(document.getElementById("user-start-date-bar").value + ", 00:00:00");
+        //the .value is important to get the value of the date inputted
+        const endDate = new Date(document.getElementById("user-end-date-bar").value + ", 00:00:00");
+        console.log(startDate + " " +endDate);
+        const rows = document.getElementById("transactionTableBody").getElementsByTagName('tr');
+
+
+        for (let i = 0; i < rows.length; i++) {
+            const tempDate = new Date(rows[i].getElementsByTagName('td')[4].textContent);
+            if ((tempDate >= startDate) && (tempDate <= endDate)) {
+                // do >= <= instead of only === bc we have DateTime instead of just Date
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+
+}
+
+//handling filter by trasnaction type
+function handleUserFilter(transactionType) {
+    const rows = document.getElementById("transactionTableBody").getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        const type = rows[i].getElementsByTagName('td')[1].textContent.trim(); // Assuming transaction type is in the second column
+        if (type === transactionType) {
+            rows[i].style.display = '';
+        } else {
+            rows[i].style.display = 'none';
+        }
+    }
+}
+
+//handling sort ascending / descending for amount
+function handleUserSort(ascending) {
+    const rows = Array.from(document.getElementById("transactionTableBody").getElementsByTagName('tr'));
+    const sortFactor = ascending ? 1 : -1;
+
+    rows.sort((a, b) => {
+        const amountA = parseFloat(a.getElementsByTagName('td')[3].textContent);
+        const amountB = parseFloat(b.getElementsByTagName('td')[3].textContent);
+        return sortFactor * (amountA - amountB);
+    });
+
+    const tbody = document.getElementById("transactionTableBody");
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+//handling date sort ascending / descending
+function handleUserDateSort(ascending) {
+    const rows = Array.from(document.getElementById("transactionTableBody").getElementsByTagName('tr'));
+    const sortFactor = ascending ? 1 : -1;
+
+    rows.sort((a, b) => {
+        const amountA = new Date(a.getElementsByTagName('td')[4].textContent);
+        const amountB = new Date(b.getElementsByTagName('td')[4].textContent);
+        return sortFactor * (amountA - amountB);
+    });
+
+    const tbody = document.getElementById("transactionTableBody");
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+//handling clear filter
+function clearUserFilter() {
+    const rows = document.getElementById("transactionTableBody").getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = '';
+    }
+}
+
+//handling clear search
+function clearUserSearch() {
+    document.getElementById("user-search-bar").value = ''; // Clear the search input
+    clearUserFilter(); // Also clear any previous filter
+}
