@@ -348,7 +348,7 @@ function loadCreateTransaction() {
         const amount = document.getElementById("amount").value;
         //console.log(transactionType + document.getElementById("amount").value);
 
-        const accountID = document.getElementById("acctNo").text;
+        const accountID = document.getElementById("acctNo").innerText;
         console.log(accountID);
         //create new transaction
         addNewTransaction(accountID, transactionType, amount);
@@ -373,7 +373,8 @@ function loadCreateTransaction() {
 // Function to update the user profile and account  (admin/user)
 function addNewTransaction(accountID, transactionType, amount) {
 
-    /*
+    var jsonLength;
+
     // Fetch the existing user profile based on the old email
     fetch(`/api/transaction/`, {
         method: 'GET',
@@ -392,15 +393,15 @@ function addNewTransaction(accountID, transactionType, amount) {
         .then((json) => console.log(json))
         .catch(error => {
             console.error('Error creating new transaction:', error);
-        });*/
-    //string accountNo = accountID.toString();
-    
+        });
+
+
         //new transaction
     const createdTransaction = {
         transactionID: "36",
         transactionType: transactionType,
         amount: amount,
-        accountNo: "123555",
+        accountNo: accountID,
         transactionDate: "10/15/2023 20:01:48",
         description: ""
 
