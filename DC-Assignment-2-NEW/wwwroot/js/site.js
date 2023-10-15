@@ -732,6 +732,34 @@ function clearAdminSearch() {
                                 if (response.ok) {
                                     console.log('Account created successfully');
 
+                                    // Logging activity 
+                                    const newUser = {
+                                        Username: newUsername,
+                                    };
+
+                                    // Define the API endpoint URL
+                                    const apiUrl = '/api/admin/admincreateUser';
+
+                                    const requestOptions = {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json', // Specify the content type as JSON
+                                        },
+                                        body: JSON.stringify(newUser), 
+                                    };
+
+                                    // Send the POST request to create the user
+                                    fetch(apiUrl, requestOptions)
+                                        .then(response => {
+                                            if (response.ok) {
+                                                console.log('Create Activity sucessfully logged');
+                                            } else {
+                                                console.error('Error logging create activity');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Create user request error:', error);
+                                        });
                                 } else {
                                     console.error('Error creating account');
                                 }
@@ -880,7 +908,7 @@ function clearAdminSearch() {
     //update account when userProfile was modified
     function updateAccount(newEmail, AccountNo) {
 
-
+        let username_st = "";
         // Fetch the existing user profile based on the old email
         fetch(`/api/account/${AccountNo}`)
             .then(response => {
@@ -901,6 +929,7 @@ function clearAdminSearch() {
                     balance: accountData.balance
                 };
 
+                username_st = accountData.username;
 
                 // Send an HTTP PUT request to update the user profile
                 return fetch(`/api/account`, {
@@ -916,6 +945,34 @@ function clearAdminSearch() {
                     console.log('Account updated successfully');
                     loadAllUsers();
 
+                    // Logging activity 
+                    const updatedUser = {
+                        Username: username_st,
+                    };
+
+                    const apiUrl = '/api/admin/adminupdateUser';
+
+                    const requestOptions = {
+                        method: 'POST',  
+                        headers: {
+                            'Content-Type': 'application/json',  // Specify the content type as JSON
+ 
+                        },
+                        body: JSON.stringify(updatedUser),  
+                    };
+
+                    // Send the POST request to update the user
+                    fetch(apiUrl, requestOptions)
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Update Activity sucessfully logged');
+                            } else {
+                                console.error('Error logging update activity');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Update user request error:', error);
+                        });
                 } else {
                     console.error('Error updating account');
                 }
@@ -986,6 +1043,30 @@ function clearAdminSearch() {
                                     if (accountResponse.ok) {
                                         console.log(`Account associated with ${username} (${accountNo}) successfully deleted.`);
                                         deleteTransactionsByAccount(accountNo)
+
+                                        // Logging activity 
+                                        const apiUrl = `/api/admin/admindeleteUser?username=${username}`;
+
+                                        const requestOptions = {
+                                            method: 'POST', 
+                                            headers: {
+                                                'Content-Type': 'application/json',  // Specify the content type as JSON
+                                            },
+                                          
+                                        };
+
+                                        // Send the POST request to delete the user
+                                        fetch(apiUrl, requestOptions)
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    console.log('Delete Activity sucessfully logged');
+                                                } else {
+                                                    console.error('Error logging delete activity');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Delete user request error:', error);
+                                            });
                                     } else {
                                         console.error(`Error deleting account for ${username} (${accountNo}).`);
                                     }

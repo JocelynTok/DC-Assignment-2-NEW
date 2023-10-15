@@ -919,6 +919,32 @@ namespace DC_Assignment_2_NEW.Data
             return false; // Update failed
         }
 
+        public static string GetCurrentAdminByRole()
+        {
+            // Replace this logic with your actual implementation
+            // Retrieve the current admin's ID based on their role
+            string currentAdminUsername = "";
+
+            // Example implementation:
+            // Assuming you have a list of UserProfile objects representing admins
+            // and each UserProfile object has a "Roles" property indicating their role
+            // You can iterate through the list and find the admin with the desired role
+
+            // Replace "adminList" with your actual list of UserProfile objects representing admins
+            List<UserProfile> adminList = GetAllUserProfiles();
+
+            foreach (var admin in adminList)
+            {
+                if (admin.Roles == "admin")
+                {
+                    currentAdminUsername = admin.Username; // You can change this to the appropriate ID property of your UserProfile model
+                    break;
+                }
+            }
+
+            return currentAdminUsername;
+        }
+
         public static void DBInitialize()
         {
             DBGenerator generator = new DBGenerator();
