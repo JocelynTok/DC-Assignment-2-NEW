@@ -729,22 +729,20 @@ function clearAdminSearch() {
                                 if (response.ok) {
                                     console.log('Account created successfully');
 
+                                    // Logging activity 
                                     const newUser = {
                                         Username: newUsername,
-                                        // Add other properties as needed
                                     };
 
                                     // Define the API endpoint URL
                                     const apiUrl = '/api/admin/admincreateUser';
 
-                                    // Define the request options, including the HTTP method and headers
                                     const requestOptions = {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json', // Specify the content type as JSON
-                                            // Add any other headers you need here
                                         },
-                                        body: JSON.stringify(newUser), // Convert the data object to a JSON string
+                                        body: JSON.stringify(newUser), 
                                     };
 
                                     // Send the POST request to create the user
@@ -752,7 +750,6 @@ function clearAdminSearch() {
                                         .then(response => {
                                             if (response.ok) {
                                                 console.log('Create Activity sucessfully logged');
-                                                // Perform any further actions after user creation
                                             } else {
                                                 console.error('Error logging create activity');
                                             }
@@ -945,22 +942,20 @@ function clearAdminSearch() {
                     console.log('Account updated successfully');
                     loadAllUsers();
 
+                    // Logging activity 
                     const updatedUser = {
                         Username: username_st,
-                        // Add other properties as needed
                     };
 
-                    // Define the API endpoint URL
                     const apiUrl = '/api/admin/adminupdateUser';
 
-                    // Define the request options, including the HTTP method and headers
                     const requestOptions = {
-                        method: 'POST',  // This should be 'POST' to update the user
+                        method: 'POST',  
                         headers: {
                             'Content-Type': 'application/json',  // Specify the content type as JSON
-                            // Add any other headers you need here
+ 
                         },
-                        body: JSON.stringify(updatedUser),  // Convert the updated user data to a JSON string
+                        body: JSON.stringify(updatedUser),  
                     };
 
                     // Send the POST request to update the user
@@ -968,7 +963,6 @@ function clearAdminSearch() {
                         .then(response => {
                             if (response.ok) {
                                 console.log('Update Activity sucessfully logged');
-                                // Perform any further actions after user creation
                             } else {
                                 console.error('Error logging update activity');
                             }
@@ -1047,14 +1041,13 @@ function clearAdminSearch() {
                                         console.log(`Account associated with ${username} (${accountNo}) successfully deleted.`);
                                         deleteTransactionsByAccount(accountNo)
 
+                                        // Logging activity 
                                         const apiUrl = `/api/admin/admindeleteUser?username=${username}`;
 
-                                        // Define the request options, including the HTTP method and headers
                                         const requestOptions = {
-                                            method: 'POST',  // This should be 'POST' to delete the user
+                                            method: 'POST', 
                                             headers: {
                                                 'Content-Type': 'application/json',  // Specify the content type as JSON
-                                                // Add any other headers you need here
                                             },
                                           
                                         };
@@ -1064,7 +1057,6 @@ function clearAdminSearch() {
                                             .then(response => {
                                                 if (response.ok) {
                                                     console.log('Delete Activity sucessfully logged');
-                                                    // Perform any further actions after user creation
                                                 } else {
                                                     console.error('Error logging delete activity');
                                                 }
