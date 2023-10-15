@@ -1,4 +1,5 @@
 ﻿using DC_Assignment_2_NEW.Models;
+using System.Data.SqlClient;
 using System.Data.SQLite;
 
 namespace DC_Assignment_2_NEW.Data
@@ -169,20 +170,32 @@ namespace DC_Assignment_2_NEW.Data
                     connection.Open();
                     using (SQLiteCommand command = connection.CreateCommand())
                     {
+                        
+                        string rowCommand = "SELECT COUNT(*) FROM TransactionTable";
+                        String rowCount = "";
+                        using var cmd = new SQLiteCommand(rowCommand, connection);
+                        rowCount = cmd.ExecuteScalar().ToString();
+                        //SQLiteDataReader reader = command.ExecuteReader();
+
+                        
+                        
+
                         command.CommandText = @"
                         INSERT INTO TransactionTable (TransactionID, TransactionType, Amount, AccountNo, TransactionDate, Description)
                         VALUES (@TransactionID, @TransactionType, @Amount, @AccountNo, @TransactionDate, @Description)
                         ";
 
+
+
                         //define transaction parameters
-                        command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
+                        command.Parameters.AddWithValue("@TransactionID", rowCount);
                         command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                         command.Parameters.AddWithValue("@Amount", transaction.Amount);
                         command.Parameters.AddWithValue("@AccountNo", transaction.AccountNo);
                         //String formattedDate = transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm:ss");
                         command.Parameters.AddWithValue("@TransactionDate", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
 
-                        command.Parameters.AddWithValue("@Description", transaction.Description);
+                        command.Parameters.AddWithValue("@Description", transaction.Description + rowCount);
 
                         int rowsInserted = command.ExecuteNonQuery();
 
