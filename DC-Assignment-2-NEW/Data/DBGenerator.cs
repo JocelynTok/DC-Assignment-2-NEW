@@ -112,7 +112,7 @@ namespace DC_Assignment_2_NEW.Data
             user.PictureUrl = GetPicture();
             user.PasswordHash = GetPassword();
             user.AccountNo = account.AccountNo;
-            user.Roles = GetRole();
+            user.Roles = "user";
 
             return user;
         }

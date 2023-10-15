@@ -930,6 +930,33 @@ namespace DC_Assignment_2_NEW.Data
                 int balance = 0;
                 string accountNumber = "", username = "", email = "";
 
+                //setting admin accounts
+                Account adminAccount = new Account();
+                generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                adminAccount.AccountNo = accountNumber;
+                adminAccount.Username = "Shu Man";
+                adminAccount.Email = "shuman_admin@gmail.com";
+                adminAccount.Balance = balance;
+                Insert(adminAccount);
+
+                adminAccount = new Account();
+                generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                adminAccount.AccountNo = accountNumber;
+                adminAccount.Username = "JasmineC";
+                adminAccount.Email = "jasmine_admin@gmail.com";
+                adminAccount.Balance = balance;
+                Insert(adminAccount);
+
+                adminAccount = new Account();
+                generator.GetNextAccount(out accountNumber, out username, out email, out balance);
+                adminAccount.AccountNo = accountNumber;
+                adminAccount.Username = "Jia Yi";
+                adminAccount.Email = "jiayi_admin@gmail.com";
+                adminAccount.Balance = balance;
+                Insert(adminAccount);
+
+
+                // Inserting random user accounts
                 Account account;
                 for (int i = 0; i < initialAccountNo; i++)
                 {
@@ -956,12 +983,26 @@ namespace DC_Assignment_2_NEW.Data
                 List<Account> accounts = GetAll();
                 foreach (Account account in accounts)
                 {
-                    //for each account, we create the rest of the profile based on that account and insert it into the db
-                    UserProfile user = generator.GetNextUserProfile(account);
-                    //Console.WriteLine(user.ProfileToString());
-                    InsertUserProfile(user);
+                    string accountNo = account.AccountNo;
+                    //we set the 3 initial accounts of admin to admin
+                    if (accountNo.Equals("100000001") || accountNo.Equals("100000002") || accountNo.Equals("100000003"))
+                    {
+                        UserProfile user = generator.GetNextUserProfile(account);
+                        user.PasswordHash = "1234";
+                        user.Roles = "admin";
+                        InsertUserProfile(user);
+                    }
+                    else
+                    {
+
+                        //for each account, we create the rest of the profile based on that account and insert it into the db
+                        UserProfile user = generator.GetNextUserProfile(account);
+                        //Console.WriteLine(user.ProfileToString());
+                        InsertUserProfile(user);
+                    }
                 }
 
+                
  
             }
 
