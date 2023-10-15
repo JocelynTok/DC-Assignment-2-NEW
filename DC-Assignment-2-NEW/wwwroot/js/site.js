@@ -346,9 +346,10 @@ function loadCreateTransaction() {
         const transactionType = dropdown.options[selectedIndex].text;
         //get transaciton type from form
         const amount = document.getElementById("amount").value;
-        console.log(transactionType + document.getElementById("amount").value);
+        //console.log(transactionType + document.getElementById("amount").value);
 
         const accountID = document.getElementById("acctNo").text;
+        console.log(accountID);
         //create new transaction
         addNewTransaction(accountID, transactionType, amount);
         
@@ -392,15 +393,16 @@ function addNewTransaction(accountID, transactionType, amount) {
         .catch(error => {
             console.error('Error creating new transaction:', error);
         });*/
-
+    //string accountNo = accountID.toString();
+    
         //new transaction
     const createdTransaction = {
-        accountNo: accountID,
-        amount: amount,
-        description: "",
-        transactionDate: "",
-        transactionID: "",
+        transactionID: "36",
         transactionType: transactionType,
+        amount: amount,
+        accountNo: "123555",
+        transactionDate: "10/15/2023 20:01:48",
+        description: ""
 
     };
 
