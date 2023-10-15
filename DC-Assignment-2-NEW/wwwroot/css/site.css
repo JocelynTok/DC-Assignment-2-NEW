@@ -1,21 +1,17 @@
-<!DOCTYPE html >
-<html >
-<head >
-    <style >
-        html {
-            font-size: 14px;
-        }
+html {
+    font-size: 14px;
+}
 
-        @media (min-width: 768px) {
-            html {
-                font-size: 16px;
-            }
-        }
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
 
-        html {
-            position: relative;
-            min-height: 100%;
-        }
+html {
+    position: relative;
+    min-height: 100%;
+}
 
 body {
   margin-bottom: 60px;
@@ -28,3 +24,108 @@ button{
 .standard-button{
     margin: 5px;
 }
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+button {
+    margin: 5px;
+}
+
+.standard-button {
+    margin: 5px;
+}
+
+/* New styles for JavaScript functionality */
+
+/* Main content container */
+#main {
+    padding: 20px;
+}
+
+/* Content container for admin view */
+#content {
+    padding: 20px;
+}
+
+/* Content container for user view */
+#content {
+    padding: 20px;
+}
+
+/* Account summary section */
+.account-summary {
+    margin-bottom: 20px;
+}
+
+.account-summary-heading {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.account-summary-details {
+    margin-top: 10px;
+}
+
+    .account-summary-details p {
+        margin: 5px 0;
+    }
+
+/* Profile section */
+.profile {
+    margin-bottom: 20px;
+}
+
+.profile-heading {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.profile-details {
+    margin-top: 10px;
+}
+
+    .profile-details p {
+        margin: 5px 0;
+    }
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+/* Transaction section */
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+    .transaction-table th,
+    .transaction-table td {
+        padding: 8px;
+        border: 1px solid #ccc;
+    }
+
+    .transaction-table th {
+        background-color: #f2f2f2;
+    }
