@@ -332,6 +332,98 @@ function loadTransactions() {
 
 }
 
+// --------------------------------------------------------- User Create Transaction ----------------------------------
+function loadCreateTransaction() {
+    const modal = document.getElementById("create-transaction");
+    modal.style.display = "block";
+
+    const confirmTransaction = document.getElementById("confirm-transaction");
+    const cancelTransaction = document.getElementById("cancel-transaction");
+
+    confirmTransaction.addEventListener('click', () => {
+        let dropdown = document.getElementById("transaction-type");
+        let selectedIndex = dropdown.selectedIndex;
+        const transactionType = dropdown.options[selectedIndex].text;
+        //get transaciton type from form
+        const amount = document.getElementById("amount").value;
+        console.log(transactionType + document.getElementById("amount").value);
+
+        const accountID = document.getElementById("acctNo").text;
+        //create new transaction
+        addNewTransaction(accountID, transactionType, amount);
+        
+        modal.style.display = 'none';
+        dropdown.selectedIndex = 0;
+        document.getElementById("amount").value = '';
+
+
+    });
+
+    cancelTransaction.addEventListener('click', () => {
+        let dropdown = document.getElementById("transaction-type");
+        let selectedIndex = dropdown.selectedIndex;
+        modal.style.display = 'none';
+        dropdown.selectedIndex = 0;
+        document.getElementById("amount").value = '';
+    });
+}
+
+
+// Function to update the user profile and account  (admin/user)
+function addNewTransaction(accountID, transactionType, amount) {
+
+    /*
+    // Fetch the existing user profile based on the old email
+    fetch(`/api/transaction/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error('Error accessing transaction page');
+                throw new Error('Failed to access transaction api');
+            }
+        })
+        .then((json) => console.log(json))
+        .catch(error => {
+            console.error('Error creating new transaction:', error);
+        });*/
+
+        //new transaction
+    const createdTransaction = {
+        accountNo: accountID,
+        amount: amount,
+        description: "",
+        transactionDate: "",
+        transactionID: "",
+        transactionType: transactionType,
+
+    };
+
+    // Send a POST request to create the user
+    fetch('/api/transaction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createdTransaction),
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Transaction inserted successfully');
+            
+
+            } else {
+                console.error('Error creating transaction');
+            }
+        })
+
+}
+
 // ---------------------------------------------------------- Admin Profile-----------------------------------------------------------------------
 function fetchAdminProfileDetails() {
     const email = document.cookie.replace(/(?:(?:^|.*;\s*)userEmail\s*=\s*([^;]*).*$)|^.*$/, "$1");
