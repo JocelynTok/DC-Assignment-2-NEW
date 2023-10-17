@@ -4,48 +4,64 @@
 @{
 }
 
-    <div id=" = main" >
-        <div id="header">
-        <h1> User Panel </h1>
-    </div>
-    <div id="navigation">
+<div id=" = main">
+    <h1> User Panel </h1>
+    <div id="panel-navigation">
         <ul>
             <li> <button type="button" id="Home" onclick="loadView()">Home</button></li>
             <li> <button type="button" id="ProfileButton" onclick="loadUserView('user-profile')">Profile</button></li>
         </ul>
     </div>
     <div id="summary">
-        <h1> Account Summary</h1>
+        <h1 class="sub-title"> Account Summary</h1>
         <label>Account Number: <span id="acctNo"></span></label>
         <label>Balance: <span id="balance"></span></label>
-        <br/>
+        <br />
+    </div>
+    <div id="menu">
         <button id="history" onclick="loadUserView('transaction-history')"> View Transaction History </button>
         <button id="transaction" onclick="loadCreateTransaction()"> Make A Transaction </button>
-        <button id="transfer"> Make A Transfer </button>
+        <button id="transfer" onclick="loadCreateTransfer()"> Make A Transfer </button>
     </div>
     <div id="content">
     </div>
     </div>
 
-````<div id="create-transaction" class="modal">
-        <div class="modal-content">
-        <h2 class="form-field">Create New Transaction</h2>
-            <form id="createTransactionForm">
+<div id="create-transaction" class="modal">
+    <h2 class="form-field">Create New Transaction</h2><br /><br />
+        <form id="createTransactionForm">
             <label for="transaction-type" class="form-field">Transaction Type:</label>
-                <select id="transaction-type" class="form-field" name="transaction-type-name">
-                    <option>DEPOSIT</option>
-                    <option>WITHDRAW</option>
-                </select>
-                    <br>
+            <select id="transaction-type" class="form-field" name="transaction-type-name">
+                <option>DEPOSIT</option>
+                <option>WITHDRAW</option>
+            </select>
+            <br /><br />
 
             <label for="amount" class="form-field">Amount:</label>
-                <input type="number" id="amount" name="amount-name" ><br>
+            <input type="number" id="amount" name="amount-name"><br /><br />
+
+            <label for="desc" class="form-field">Description:</label>
+            <input type="text" id="description" name="description-name" style="width: 500px"><br /><br />
 
             <button type="button" class="form-field" id="confirm-transaction">Create Transaction</button>
             <button type="button" class="form-field" id="cancel-transaction"> Cancel</button>
-            </form>
-        </div>
-    </div>
+        </form>
+
+</div>
+
+<div id="create-transfer" class="modal">
+    <h2 class="form-field">Create New Transfer</h2><br /><br />
+        <form id="makeTransactionForm">
+            <label for="accountToTransfer">Account to Transfer : </label>
+            <input type="text" id="acctNoToTransfer" name="acctNoToTransfer"><br /><br />
+
+            <label for="amountToTransfer">Amount to Transfer :</label>
+            <input type="number" id="amountToTransfer" name="amountToTransfer"><br /><br />
+
+            <button type="button" id="confirm-transfer">Transfer</button>
+            <button type="button"  id="cancel-transfer"> Cancel</button>
+        </form>
+</div>
 
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/js/site.js"></script>

@@ -1,3 +1,4 @@
-
-15/10/2023 08:00:50 PM: Admin Shu Man performed activity: Updated user Minho3
-15/10/2023 08:03:37 PM: Admin Shu Man performed activity: Updated user Jasmine3
+15/10/2023 08:00:50 PM: Admin Shu Man performed activity Updated user Minho3
+15/10/2023 08:03:37 PM: Admin Shu Man performed activity Updated user Jasmine3
+10/16/2023 3:06:05 AM: Admin Shu Man performed activity Deleted transaction 3
+10/16/2023 3:06:43 AM: Admin Shu Man performed activity Updated Transaction ID 4

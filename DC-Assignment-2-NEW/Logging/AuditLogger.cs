@@ -9,7 +9,7 @@ namespace DC_Assignment_2_NEW.Logging
 
         public static void LogActivity(string adminId, string activity)
         {
-            string logEntry = $"{DateTime.Now}: Admin {adminId} performed activity: {activity}";
+            string logEntry = $"{DateTime.Now}: Admin {adminId} performed activity {activity}";
 
             try
             {

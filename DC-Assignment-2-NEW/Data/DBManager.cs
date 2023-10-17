@@ -1,4 +1,5 @@
 ﻿using DC_Assignment_2_NEW.Models;
+using System.Data.SqlClient;
 using System.Data.SQLite;
 
 namespace DC_Assignment_2_NEW.Data
@@ -62,7 +63,8 @@ namespace DC_Assignment_2_NEW.Data
                             Amount INTEGER,
                             AccountNo TEXT,
                             TransactionDate TEXT,
-                            Description TEXT
+                            Description TEXT,
+                            TransferAcct TEXT
                         )";
 
                         command.ExecuteNonQuery();
@@ -169,20 +171,27 @@ namespace DC_Assignment_2_NEW.Data
                     connection.Open();
                     using (SQLiteCommand command = connection.CreateCommand())
                     {
+                        string rowCommand = "SELECT COUNT(*) FROM TransactionTable";
+                        String rowCount = "";
+                        using var cmd = new SQLiteCommand(rowCommand, connection);
+                        rowCount = cmd.ExecuteScalar().ToString();
+
+
                         command.CommandText = @"
-                        INSERT INTO TransactionTable (TransactionID, TransactionType, Amount, AccountNo, TransactionDate, Description)
-                        VALUES (@TransactionID, @TransactionType, @Amount, @AccountNo, @TransactionDate, @Description)
+                        INSERT INTO TransactionTable (TransactionID, TransactionType, Amount, AccountNo, TransactionDate, Description, TransferAcct)
+                        VALUES (@TransactionID, @TransactionType, @Amount, @AccountNo, @TransactionDate, @Description, @TransferAcct)
                         ";
 
                         //define transaction parameters
-                        command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
+                        command.Parameters.AddWithValue("@TransactionID", rowCount);
                         command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                         command.Parameters.AddWithValue("@Amount", transaction.Amount);
                         command.Parameters.AddWithValue("@AccountNo", transaction.AccountNo);
                         //String formattedDate = transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm:ss");
-                        command.Parameters.AddWithValue("@TransactionDate", transaction.TransactionDate);
+                        command.Parameters.AddWithValue("@TransactionDate", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
+                        command.Parameters.AddWithValue("@Description", transaction.Description + rowCount);
+                        command.Parameters.AddWithValue("@TransferAcct", transaction.TransferAcct);
 
-                        command.Parameters.AddWithValue("@Description", transaction.Description);
 
                         int rowsInserted = command.ExecuteNonQuery();
 
@@ -191,7 +200,14 @@ namespace DC_Assignment_2_NEW.Data
                         if (rowsInserted > 0)
                         {
                             // Update the account's balance
-                            UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, transaction.Amount);
+                            if (transaction.TransactionType == "TRANSFER")
+                            {
+                                UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, -transaction.Amount, transaction.TransferAcct);
+                            }
+                            else
+                            {
+                                UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, transaction.Amount, transaction.TransferAcct);
+                            }
                             return true; //insertion was successful
                         }
                     }
@@ -256,6 +272,7 @@ namespace DC_Assignment_2_NEW.Data
                     string accountNo = transaction.AccountNo;
                     int amount = transaction.Amount;
                     string transactionType = transaction.TransactionType;
+                    string accountToTransfer = transaction.TransferAcct;
 
                     // Delete the transaction
                     using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -283,6 +300,10 @@ namespace DC_Assignment_2_NEW.Data
                                 {
                                     // If it was a withdrawal, add back the amount
                                     UpdateAccountBalance(accountNo, "WITHDRAW", -amount);
+                                }
+                                else if(transactionType == "TRANSFER")
+                                {
+                                    UpdateAccountBalance(accountNo, "TRANSFER", amount, accountToTransfer);
                                 }
 
                                 return true; // Deletion was successful
@@ -362,13 +383,14 @@ namespace DC_Assignment_2_NEW.Data
                         // Build the SQL command to update data by ID
                         using (SQLiteCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = "UPDATE TransactionTable SET TransactionType = @TransactionType, Amount = @Amount, TransactionDate = @TransactionDate, Description = @Description WHERE TransactionID = @TransactionID";
+                            command.CommandText = "UPDATE TransactionTable SET TransactionType = @TransactionType, Amount = @Amount, TransactionDate = @TransactionDate, Description = @Description, TransferAcct = @TransferAcct WHERE TransactionID = @TransactionID";
                             command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
                             command.Parameters.AddWithValue("@TransactionType", transaction.TransactionType);
                             command.Parameters.AddWithValue("@Amount", transaction.Amount);
                             command.Parameters.AddWithValue("@TransactionDate", transaction.TransactionDate);
                             command.Parameters.AddWithValue("@Description", transaction.Description);
-                           
+                            command.Parameters.AddWithValue("@TransferAcct", transaction.TransferAcct);
+
 
                             // Execute the SQL command to update data
                             int rowsUpdated = command.ExecuteNonQuery();
@@ -380,23 +402,17 @@ namespace DC_Assignment_2_NEW.Data
                                 // Calculate the change in amount
                                 int amountChange = transaction.Amount - oldAmount;
 
-                                // Calculate the change in the transaction type
-                                if (transaction.TransactionType != oldTransactionType)
+                                if (transaction.TransactionType == "TRANSFER")
                                 {
-                                    if (transaction.TransactionType == "DEPOSIT")
-                                    {
-                                        Console.WriteLine("Old Amount :" + oldAmount);
-                                        Console.WriteLine("New Amount :" + transaction.Amount);
-                                        amountChange = oldAmount + transaction.Amount;
-                                    }
-                                    else if (transaction.TransactionType == "WITHDRAW")
-                                    {
-                                        amountChange -= oldAmount;
-                                    }
+                                    UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, -amountChange, transaction.TransferAcct);
                                 }
-
-                                // Update the account balance based on the amount change
-                                UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, amountChange);
+                                else
+                                {
+                                    UpdateAccountBalance(transaction.AccountNo, transaction.TransactionType, amountChange, transaction.TransferAcct);
+                                }
+                                
+                                
+                                
 
                                 return true; // Update was successful
                             }
@@ -447,7 +463,7 @@ namespace DC_Assignment_2_NEW.Data
 
             return 0; // Return 0 if the transaction doesn't exist or if there's an error
         }
-        private static void UpdateAccountBalance(string accountNo, string transactionType, int amount)
+        private static void UpdateAccountBalance(string accountNo, string transactionType, int amount, string accountToTransfer = null)
         {
             try
             {
@@ -456,24 +472,38 @@ namespace DC_Assignment_2_NEW.Data
                     connection.Open();
                     using (SQLiteCommand command = connection.CreateCommand())
                     {
-                        command.CommandText = @"
-                        UPDATE AccountTable
-                        SET Balance = Balance + @Amount
-                        WHERE AccountNo = @AccountNo";
-
                         if (transactionType == "WITHDRAW")
                         {
                             // For withdrawals, subtract the amount from the balance
                             command.CommandText = @"
-                            UPDATE AccountTable
-                            SET Balance = Balance - @Amount
-                            WHERE AccountNo = @AccountNo";
+                    UPDATE AccountTable
+                    SET Balance = Balance - @Amount
+                    WHERE AccountNo = @AccountNo";
                         }
-
+                        else
+                        {
+                            // For deposits or transfers, add the amount to the balance
+                            command.CommandText = @"
+                        UPDATE AccountTable
+                        SET Balance = Balance + @Amount
+                        WHERE AccountNo = @AccountNo";
+                        }
                         command.Parameters.AddWithValue("@AccountNo", accountNo);
                         command.Parameters.AddWithValue("@Amount", amount);
-
                         command.ExecuteNonQuery();
+
+                        if (transactionType == "TRANSFER" && !string.IsNullOrEmpty(accountToTransfer))
+                        {
+                            // Update the destination account in case of a transfer
+                            command.Parameters.Clear();
+                            command.CommandText = @"
+                    UPDATE AccountTable
+                    SET Balance = Balance - @Amount
+                    WHERE AccountNo = @TransferAccountNo";
+                            command.Parameters.AddWithValue("@TransferAccountNo", accountToTransfer);
+                            command.Parameters.AddWithValue("@Amount", amount);
+                            command.ExecuteNonQuery();
+                        }
                     }
                     connection.Close();
                 }
@@ -483,6 +513,7 @@ namespace DC_Assignment_2_NEW.Data
                 Console.WriteLine("Error updating account balance: " + ex.Message);
             }
         }
+
 
         public static List<Account> GetAll()
         {
@@ -557,6 +588,7 @@ namespace DC_Assignment_2_NEW.Data
                                 transaction.AccountNo = reader["AccountNo"].ToString();
                                 transaction.TransactionDate = reader["TransactionDate"].ToString();
                                 transaction.Description = reader["Description"].ToString();
+                                transaction.TransferAcct = reader["TransferAcct"].ToString();
 
                                 // Create a Student object and add it to the list
                                 transactionList.Add(transaction);
@@ -647,6 +679,7 @@ namespace DC_Assignment_2_NEW.Data
                                 transaction.AccountNo = reader["AccountNo"].ToString();
                                 transaction.TransactionDate = reader["TransactionDate"].ToString();
                                 transaction.Description = reader["Description"].ToString();
+                                transaction.TransferAcct = reader["TransferAcct"].ToString();
                             }
                         }
                     }
@@ -687,7 +720,8 @@ namespace DC_Assignment_2_NEW.Data
                                     TransactionType = reader["TransactionType"].ToString(),
                                     Amount = Convert.ToInt32(reader["Amount"]),
                                     TransactionDate = reader["TransactionDate"].ToString(),
-                                    Description = reader["Description"].ToString()
+                                    Description = reader["Description"].ToString(),
+                                    TransferAcct= reader["TransferAcct"].ToString()
 
                                 };
                            
@@ -1053,6 +1087,7 @@ namespace DC_Assignment_2_NEW.Data
                     transaction.AccountNo = account.AccountNo;
                     transaction.TransactionDate = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
                     transaction.Description = "Pre-generated Transaction Example";
+                    transaction.TransferAcct = null;
 
                     //Console.WriteLine(user.ProfileToString());
                     InsertTransaction(transaction);

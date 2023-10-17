@@ -4,7 +4,7 @@
 @{
 }
 <div id="main">
-    <h1> User Management</h1>
+    <h1 class="sub-title"> User Management</h1>
     <input type="text" id="search-bar" placeholder="Search by email">
     <button id="search-btn" onclick="handleUserSearch()">Search</button>
     <!-- Clear Search Button -->
@@ -13,7 +13,7 @@
     <br />
     <button id="create-user" onclick="createUser()">Create New User</button>
 
-    <table id="user-table" style="width:110%">
+    <table id="user-table" class="table">
         <thead>
             <tr>
                 <th>Username</th>
@@ -33,24 +33,24 @@
 </div>
 
 <div id="edit-modal" class="modal" style="display:none">
-    <div class="edit-modal-content">
+
         <h2>Edit User Information</h2><br /><br />
-        <label> Email : </label><input type="text" id="new-email" placeholder="New Email"><br/>
-        <label> Password : </label><input type="text" id="new-password" placeholder="New Password"><br />
-        <label> Address : </label><input type="text" id="new-address" placeholder="New Address"><br />
-        <label> Phone : </label><input type="text" id="new-phone" placeholder="New Phone"><br />
+        <label> Email : </label><input type="text" id="new-email" placeholder="New Email"><br /><br />
+        <label> Password : </label><input type="text" id="new-password" placeholder="New Password"><br /><br />
+        <label> Address : </label><input type="text" id="new-address" placeholder="New Address"><br /><br />
+        <label> Phone : </label><input type="text" id="new-phone" placeholder="New Phone"><br /><br />
 
         <button id="confirm">Confirm</button>
         <button id="cancel">Cancel</button>
-    </div>
+   
 </div>
 
 <div id="delete-modal" class="modal">
-    <div class="modal-content">
-        <p>Are you sure you want to delete this user?</p>
+        <h2> Deleting User</h2><br /><br />
+        <p>Are you sure you want to delete this user?</p><br />
         <p>Username: <span id="deleteUsername"></span></p>
-        <p>Email: <span id="deleteEmail"></span></p>
-    </div>
+        <p>Email: <span id="deleteEmail"></span></p><br />
+    
     <div class="modal-actions">
         <button id="confirmDelete">Confirm</button>
         <button id="cancelDelete">Cancel</button>
@@ -58,31 +58,30 @@
 </div>
 
 <div id="createUserModal" class="modal">
-    <div class="modal-content">
-        <h2>Create New User</h2>
+        <h2>Create New User</h2><br />
         <form id="createUserForm">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br>
+            <input type="text" id="username" name="username" required><br><br />
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required><br>
+            <input type="email" id="email" name="email" required><br><br />
 
             <label for="address">Address:</label>
-            <input type="text" id="address" name="address"><br>
+            <input type="text" id="address" name="address"><br><br />
 
             <label for="phone">Phone:</label>
-            <input type="tel" id="phone" name="phone"><br>
+            <input type="tel" id="phone" name="phone"><br><br />
 
             <label for="pictureUrl">Picture URL:</label>
-            <input type="url" id="pictureUrl" name="pictureUrl"><br>
+            <input type="url" id="pictureUrl" name="pictureUrl"><br><br />
 
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br>
+            <input type="password" id="password" name="password" required><br><br />
 
-            <button type="submit"> Create </button>
+            <button type="submit" id="submit-create"> Create </button>
             <button type="button" id="cancel-create">Cancel</button>
         </form>
-    </div>
+  
 </div>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/site.js"></script>

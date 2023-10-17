@@ -5,38 +5,36 @@
 }
 
 <div id="main">
-    <h1> Profile</h1>
-    <img id="profileImage" />
-    <label>Username <span id="username"></span></label>
-    <label>Email: <span id="email"></span></label>
-    <label>Account Number: <span id="acctNo"></span></label>
-    <label>Address: <span id="address"></span></label>
-    <label>Contact Number: <span id="phone"></span></label>
-
-    <br />
-    <button type="button" id="updateProfile" onclick="userUpdateProfile()"> Edit Profile Details </button>
-
+    <h1 class="sub-title"> Profile</h1>
+    <div id="profile-container">
+        <img id="profileImage" /><br /><br />
+        <label>Username <span id="username"></span></label><br /><br />
+        <label>Email: <span id="email"></span></label><br /><br />
+        <label>Account Number: <span id="accountNo"></span></label><br /><br />
+        <label>Address: <span id="address"></span></label><br /><br />
+        <label>Contact Number: <span id="phone"></span></label><br /><br />
+        <br />
+        <button type="button" id="updateProfile" onclick="userUpdateProfile()"> Edit Profile Details </button>
+    </div>
 </div>
 <div id="update-modal" class="modal">
-    <div class="modal-content">
-        <h2>Edit Profile Details</h2>
+    <h2>Edit Profile Details</h2><br /><br />
         <form id="updateProfileForm">
             <label for="new-email">New Email:</label>
-            <input type="email" id="new-email" name="new-email"><br>
+        <input type="email" id="new-email" name="new-email"><br /><br />
 
             <label for="new-address">New Address:</label>
-            <input type="text" id="new-address" name="new-address"><br>
+        <input type="text" id="new-address" name="new-address"><br /><br />
 
             <label for="new-phone">New Contact Number:</label>
-            <input type="tel" id="new-phone" name="new-phone"><br>
+        <input type="tel" id="new-phone" name="new-phone"><br /><br />
 
             <label for="new-password">New Password:</label>
-            <input type="password" id="new-password" name="new-password"><br>
+        <input type="password" id="new-password" name="new-password"><br /><br />
 
             <button type="button" id="confirm-update">Save Changes</button>
             <button type="button" id="cancel-update"> Cancel</button>
         </form>
-    </div>
 </div>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/js/site.js"></script>

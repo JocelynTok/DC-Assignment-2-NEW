@@ -9,8 +9,19 @@
 function loadView(status) {
     var apiUrl = '/api/login/defaultview';
     fetchAccountDetails();
+    fetchAdminProfileDetails();
+    fetchUserProfileDetails();
+    loadAllTransactions();
+    loadAllUsers();
+    loadAllAdmins();
+    displayLogContents();
+    loadTransactions();
     if (status === "authview") {
         apiUrl = '/api/login/authview';
+        fetchAccountDetails();
+        fetchAdminProfileDetails();
+        fetchUserProfileDetails();
+
     } else if (status === "error") {
         apiUrl = '/api/login/error';
     } else if (status === "about") {
@@ -66,6 +77,10 @@ function loadAdminView(status) {
         apiUrl = '/api/admin/adminManagement';
         loadAllAdmins();
     }
+    else if (status === "activity-logs") {
+        apiUrl = '/api/admin/activityLogs';
+        displayLogContents();
+    }
 
     console.log("Hello " + apiUrl);
 
@@ -114,6 +129,7 @@ function loadUserView(status) {
             // Handle the data from the API
             document.getElementById('content').innerHTML = data;
             document.getElementById('summary').style.display = 'none';
+            document.getElementById('menu').style.display = 'none';
 
         })
         .catch(error => {
@@ -170,8 +186,6 @@ function performAuth() {
                             } else if (sessionID === "223456789") {
                                 
                                 fetchUserProfileDetails();
-                               
-                               
                             }
 
                             break;
@@ -226,7 +240,6 @@ function fetchAccountDetails() {
                         if (accountNo && accountData.balance) {
                             document.getElementById('acctNo').textContent = accountNo;
                             document.getElementById('balance').textContent = accountData.balance;
-
                    
                         }
 
@@ -259,14 +272,12 @@ function fetchUserProfileDetails() {
         .then(userProfileData => {
        //     console.log(userProfileData);
             document.getElementById('profileImage').src = userProfileData.pictureUrl;
-            document.getElementById('acctNo').textContent =  userProfileData.accountNo;
+            document.getElementById('accountNo').textContent =  userProfileData.accountNo;
             document.getElementById('username').textContent =  userProfileData.username;
             document.getElementById('email').textContent = userProfileData.email;
             document.getElementById('address').textContent = userProfileData.address;
             document.getElementById('phone').textContent = userProfileData.phone;
 
-
-     
         })
         .catch(error => {
             console.error('Fetch error:', error);
@@ -277,11 +288,11 @@ function fetchUserProfileDetails() {
 
 // ---------------------------------------------------------- User Loading Transaction -----------------------------------------------------------------------
 function loadTransactions() {
-    // Step 1: Retrieve userEmail from cookies
+    // Retrieve userEmail from cookies
     const userEmail = document.cookie.replace(/(?:(?:^|.*;\s*)userEmail\s*=\s*([^;]*).*$)|^.*$/, "$1");
 
     if (userEmail) {
-        // Step 2: Use userEmail to fetch accountNo from userProfile
+        // Use userEmail to fetch accountNo from userProfile
         fetch(`/api/userProfile/${userEmail}`)
             .then(response => {
                 if (!response.ok) {
@@ -292,7 +303,7 @@ function loadTransactions() {
             .then(userProfileData => {
                 const accountNo = userProfileData.accountNo;
 
-                // Step 3: Use accountNo to fetch transactions
+                // Use accountNo to fetch transactions
                 fetch(`/api/transaction/account/${accountNo}`)
                     .then(response => {
                         if (!response.ok) {
@@ -301,7 +312,7 @@ function loadTransactions() {
                         return response.json();
                     })
                     .then(transactions => {
-                        // Step 4: Display the transactions in a table
+                        // Display the transactions in a table
                         const tableBody = document.getElementById('transactionTableBody');
                         tableBody.innerHTML = ''; // Clear existing rows
                         console.log(transactions);
@@ -315,7 +326,8 @@ function loadTransactions() {
                             row.insertCell(2).textContent = transaction.accountNo;
                             row.insertCell(3).textContent = transaction.amount;
                             row.insertCell(4).textContent = transaction.transactionDate;
-                            row.insertCell(5).textContent = transaction.description;
+                            row.insertCell(5).textContent = transaction.transferAcct;
+                            row.insertCell(6).textContent = transaction.description;
 
                         });
                     })
@@ -348,15 +360,17 @@ function loadCreateTransaction() {
         const amount = document.getElementById("amount").value;
         //console.log(transactionType + document.getElementById("amount").value);
 
+        const description1 = document.getElementById("description").value;
+
         const accountID = document.getElementById("acctNo").innerText;
         console.log(accountID);
         //create new transaction
-        addNewTransaction(accountID, transactionType, amount);
-        
+        addNewTransaction(accountID, transactionType, amount, description1);
+
         modal.style.display = 'none';
         dropdown.selectedIndex = 0;
         document.getElementById("amount").value = '';
-
+        document.getElementById("description").value = "";
 
     });
 
@@ -366,44 +380,43 @@ function loadCreateTransaction() {
         modal.style.display = 'none';
         dropdown.selectedIndex = 0;
         document.getElementById("amount").value = '';
+        document.getElementById("description").value = "";
     });
 }
 
 
 // Function to update the user profile and account  (admin/user)
-function addNewTransaction(accountID, transactionType, amount) {
+function addNewTransaction(accountID, transactionType, amount, description1) {
 
-    var jsonLength;
+    let jsonLength;
 
     // Fetch the existing user profile based on the old email
+    /*
     fetch(`/api/transaction/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                console.error('Error accessing transaction page');
-                throw new Error('Failed to access transaction api');
-            }
-        })
-        .then((json) => console.log(json))
+        .then(response => response.json()
+        )
+        .then((json) => { jsonLength = json.length })
         .catch(error => {
             console.error('Error creating new transaction:', error);
         });
+    
+    console.log("Length" +jsonLength);
+   */
 
-
-        //new transaction
+    //new transaction
     const createdTransaction = {
-        transactionID: "36",
+        transactionID: "123",
         transactionType: transactionType,
         amount: amount,
         accountNo: accountID,
-        transactionDate: "10/15/2023 20:01:48",
-        description: ""
+        transactionDate: "",
+        //this will be filled in insert transaction
+        description: description1
 
     };
 
@@ -418,7 +431,9 @@ function addNewTransaction(accountID, transactionType, amount) {
         .then(response => {
             if (response.ok) {
                 console.log('Transaction inserted successfully');
-            
+                // Display an messagenotify that is success
+                alert("Transaction successfully maded.");
+
 
             } else {
                 console.error('Error creating transaction');
@@ -574,6 +589,8 @@ function updateUserProfileAndAccount(oldEmail, newEmail, newPassword, newAddress
                 document.cookie = 'userEmail' + '=' + newEmail;
                 fetchAdminProfileDetails();
                 fetchUserProfileDetails();
+                // Display an messagenotify that is success
+                alert("Profile successfully update.");
 
             } else {
                 console.error('Error updating user profile');
@@ -698,12 +715,14 @@ function clearAdminSearch() {
                         // Edit button
                         const editButton = document.createElement('button');
                         editButton.textContent = 'Edit';
+                        editButton.className = 'edit-button'; 
                         editButton.addEventListener('click', () => openEditModal(data.accountNo));
                         cell7.appendChild(editButton);
 
                         // Delete button
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = 'Delete';
+                        deleteButton.className = 'delete-button'; 
                         deleteButton.addEventListener('click', () => handleDelete(data.username, data.email));
                         cell7.appendChild(deleteButton);
 
@@ -987,6 +1006,7 @@ function clearAdminSearch() {
             .then(response => {
                 if (response.ok) {
                     console.log('User profile updated successfully');
+                    // Display an messagenotify that is success
                     updateAccount(newEmail, AccountNo);
                     loadAllUsers();
 
@@ -1038,6 +1058,9 @@ function clearAdminSearch() {
             .then(response => {
                 if (response.ok) {
                     console.log('Account updated successfully');
+                    // Display an messagenotify that is success
+                    alert(`Successfully updated user ${username} profile and account.`);
+
                     loadAllUsers();
 
                     // Logging activity 
@@ -1137,8 +1160,10 @@ function clearAdminSearch() {
                                 .then(accountResponse => {
                                     if (accountResponse.ok) {
                                         console.log(`Account associated with ${username} (${accountNo}) successfully deleted.`);
+                                        // Display an messagenotify that is success
+                                        
                                         deleteTransactionsByAccount(accountNo)
-
+                                        alert(`Successfully delete user ${username} profile and associated account :${accountNo} with all transaction details.`);
                                         // Logging activity 
                                         const apiUrl = `/api/admin/admindeleteUser?username=${username}`;
 
@@ -1203,6 +1228,8 @@ function deleteTransactionsByAccount(accountNo) {
             transactions.forEach(transaction => {
                 console.log(transaction);
                 deleteTransaction(transaction.transactionID);
+                loadAllTransactions();
+
             });
         })
         .catch(error => {
@@ -1218,6 +1245,27 @@ function deleteTransaction(transactionID) {
         .then(response => {
             if (response.ok) {
                 console.log(`Transaction with ID ${transactionID} successfully deleted.`);
+                loadAllTransactions();
+                // Logging activity 
+                const apiUrl = `/api/admin/admindeleteTransaction?transactionID=${transactionID}`;
+
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',  // Specify the content type as JSON
+                    },
+
+                };
+
+                // Send the POST request to delete the user
+                fetch(apiUrl, requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Delete Transaction Activity sucessfully logged');
+                        } else {
+                            console.error('Error logging delete transaction activity');
+                        }
+                    })
             } else {
                 console.error(`Error deleting transaction with ID ${transactionID}.`);
             }
@@ -1250,7 +1298,24 @@ function deleteTransaction(transactionID) {
                     row.insertCell(2).textContent = transaction.accountNo;
                     row.insertCell(3).textContent = transaction.amount;
                     row.insertCell(4).textContent = transaction.transactionDate;
-                    row.insertCell(5).textContent = transaction.description;
+                    row.insertCell(5).textContent = transaction.transferAcct;
+                    row.insertCell(6).textContent = transaction.description;
+
+                    // Cell 7: Edit and Delete buttons
+                    const cell7 = row.insertCell(7);
+
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.className = 'edit-button'; 
+                    editButton.addEventListener('click', () => openTransactionEditModal(transaction.transactionID));
+                    cell7.appendChild(editButton);
+
+                    // Delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.className = 'delete-button';
+                    deleteButton.addEventListener('click', () => handleTransactionDelete(transaction.transactionID, transaction.transactionType));
+                    cell7.appendChild(deleteButton);
                 });
             })
             .catch(error => {
@@ -1258,6 +1323,133 @@ function deleteTransaction(transactionID) {
             });
 
     }
+
+function openTransactionEditModal(transactionID) {
+    const modal = document.getElementById("edit-transaction-modal");
+    modal.style.display = "block";
+    console.log('Edit clicked for transaction ID:', transactionID);
+
+    const confirmButton = document.getElementById("confirm-update-transaction");
+    const cancelButton = document.getElementById("cancel-update-transaction");
+
+    confirmButton.onclick = function () {
+        // Call confirmAction with the oldEmail parameter
+        confirmTransactionAction(transactionID);
+
+        modal.style.display = 'none';
+
+        document.getElementById("new-amount").value = "";
+        document.getElementById("new-description").value = "";
+    };
+
+    cancelButton.addEventListener('click', () => {
+        modal.style.display = 'none';
+
+        document.getElementById("new-amount").value = "";
+        document.getElementById("new-description").value = "";
+    });
+
+}
+
+function confirmTransactionAction(transactionID) {
+    // Use the captured oldEmail
+    const newAmount = document.getElementById("new-amount").value;
+    const newDesc= document.getElementById("new-description").value;
+
+
+    // Fetch the existing user profile based on the old email
+    fetch(`/api/transaction/${transactionID}`)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error('Error fetching existing transaction');
+                throw new Error('Transaction not found');
+            }
+        })
+        .then(existingTransaction => {
+            // Create an object with the updated data
+            const updatedTransaction = {
+                transactionID: existingTransaction.transactionID,
+                transactionType: existingTransaction.transactionType,
+                amount: newAmount,
+                accountNo: existingTransaction.accountNo,
+                transactionDate: existingTransaction.transactionDate,
+                description: newDesc,
+                transferAcct: existingTransaction.transferAcct
+            };
+
+            // Send an HTTP PUT request to update the user profile
+            return fetch(`/api/transaction`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedTransaction),
+            });
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Transaction updated successfully');
+                loadAllUsers();
+                loadAllTransactions();
+                alert(`Successfully update transaction id:  ${transactionID}.`);
+
+                const apiUrl = `/api/admin/adminupdateTransaction?transactionID=${transactionID}`;
+
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',  // Specify the content type as JSON
+                    },
+
+                };
+
+                // Send the POST request to delete the user
+                fetch(apiUrl, requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Update Transaction Activity sucessfully logged');
+                        } else {
+                            console.error('Error logging update transaction activity');
+                        }
+                    })
+
+            } else {
+                console.error('Error updating transaction');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating transaction:', error);
+        });
+
+}
+
+//handling delete user and delete modal
+
+function handleTransactionDelete(transactionID,transactionType) {
+    // Show the delete user modal
+    const modal = document.getElementById('delete-transaction-modal');
+    modal.style.display = 'block';
+
+    // Add event listeners to the confirm and cancel buttons
+    const confirmButton = document.getElementById('confirmDeleteTransaction');
+    const cancelButton = document.getElementById('cancelDeleteTransaction');
+
+    confirmButton.addEventListener('click', () => {
+        deleteTransaction(transactionID);
+        loadAllTransactions();
+
+        modal.style.display = 'none';
+    });
+
+    cancelButton.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    document.getElementById('deleteTransactionID').textContent = transactionID;
+    document.getElementById('deleteTransactionType').textContent = transactionType;
+}
 
     //handle transaction search by accountNo
     function handleSearch() {
@@ -1354,15 +1546,57 @@ function deleteTransaction(transactionID) {
         clearFilter(); // Also clear any previous filter
     }
 
+// ---------------------------------------------------------- Admin load activity logs -----------------------------------------------------------------------
+
+function displayLogContents() {
+    // Make an AJAX request to fetch the log file contents
+    fetch('/api/logfile') // Replace with the actual API endpoint to read the log file
+        .then(response => {
+            if (response.ok) {
+                return response.text(); // Read the response as text
+            } else {
+                throw new Error('Error fetching log file contents');
+            }
+        })
+        .then(logText => {
+            // Split the log text into individual log entries
+            const logEntries = logText.split('\n');
+
+            // Get the activity-table-body element to add rows
+            const tableBody = document.getElementById('activity-table-body');
+
+            // Loop through the log entries and create table rows
+            logEntries.forEach(logEntry => {
+                const [dateTime, activity] = logEntry.split(': ');
+
+                // Create a new row
+                const row = tableBody.insertRow();
+
+                // Create date, time, and activity cells
+                const dateCell = row.insertCell(0);
+                const timeCell = row.insertCell(1);
+                const activityCell = row.insertCell(2);
+
+                // Set the cell values
+                dateCell.textContent = dateTime.split(' ')[0];
+                timeCell.textContent = dateTime.split(' ')[1];
+                activityCell.textContent = activity;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
     // ---------------- Transactions page for USER only --------------------------------
     //handle transaction search by accountNo in user
     function handleUserSearch() {
-        const searchTerm = document.getElementById("user-search-bar").value.trim().toLowerCase();
+        const searchTerm = document.getElementById("user-search-bar").value;
         const rows = document.getElementById("transactionTableBody").getElementsByTagName('tr');
 
         for (let i = 0; i < rows.length; i++) {
-            const accountNo = rows[i].getElementsByTagName('td')[2].textContent.trim().toLowerCase();
-            if (accountNo.localeCompare(searchTerm) === 0) {
+            const transactionID = rows[i].getElementsByTagName('td')[0].textContent.trim().toLowerCase();
+            if (transactionID.localeCompare(searchTerm) === 0) {
                 rows[i].style.display = '';
             } else {
                 rows[i].style.display = 'none';
@@ -1448,4 +1682,116 @@ function clearUserFilter() {
 function clearUserSearch() {
     document.getElementById("user-search-bar").value = ''; // Clear the search input
     clearUserFilter(); // Also clear any previous filter
+}
+
+// --------------------------------------------------------- User Create Transfer ----------------------------------
+function loadCreateTransfer() {
+    const modal = document.getElementById("create-transfer");
+    modal.style.display = "block";
+
+    const confirmTransaction = document.getElementById("confirm-transfer");
+    const cancelTransaction = document.getElementById("cancel-transfer");
+
+    confirmTransaction.addEventListener('click', () => {
+        //get transaciton type from form
+        const amount = document.getElementById("amountToTransfer").value;
+        //console.log(transactionType + document.getElementById("amount").value);
+
+        const accountID = document.getElementById("acctNo").innerText;
+
+
+        const accountToTransfer = document.getElementById("acctNoToTransfer").value;
+
+        console.log(accountToTransfer);
+        validateAccount(accountToTransfer)
+            .then((isValid) => {
+                if (isValid) {
+                    // Account is valid, create the transfer
+                    addNewTransfer(accountID, amount, accountToTransfer);
+                    modal.style.display = 'none';
+                    document.getElementById("amountToTransfer").value = "";
+                    document.getElementById("acctNoToTransfer").value = "";
+                    
+                } else {
+                    // Display an error message or handle the invalid account case
+                    alert("Invalid account number. Please enter a valid account.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error validating account:", error);
+            });
+    });
+
+    cancelTransaction.addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.getElementById("amountToTransfer").value = "";
+        document.getElementById("acctNoToTransfer").value = "";
+    });
+}
+
+// Function to update the user profile and account  (admin/user)
+function addNewTransfer(accountID, amount, accountToTransfer) {
+    const timestamp = Date.now();
+    const date = new Date(timestamp);
+    const formattedDateTime = formatDateTime(date);
+
+    // New transaction
+    const createdTransfer = {
+        transactionID: Math.floor(1000 + Math.random() * 9000).toString(),
+        transactionType: "TRANSFER",
+        amount: amount,
+        accountNo: accountID,
+        transactionDate: formattedDateTime,
+        description: `Transferring to ${accountToTransfer}`,
+        transferAcct: accountToTransfer
+    };
+
+    // Send a POST request to create the transaction
+    fetch('/api/transaction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createdTransfer),
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Transfer inserted successfully');
+                fetchAccountDetails();
+                // Display an messagenotify that is success
+                alert(`Transfer to account ${accountToTransfer} successfully maded.`);
+            } else {
+                console.error('Error creating transaction');
+            }
+        });
+}
+
+
+function formatDateTime(date) {
+    const day = String(date.getDate()).padStart(2, '0'); // Get the day and pad with leading zero if necessary
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month (note that months are zero-based) and pad with leading zero
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0'); // Get the hours and pad with leading zero if necessary
+    const minutes = String(date.getMinutes()).padStart(2, '0'); // Get the minutes and pad with leading zero if necessary
+    const seconds = String(date.getSeconds()).padStart(2, '0'); // Get the seconds and pad with leading zero if necessary
+
+    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
+function validateAccount(accountToTransfer) {
+    // Replace 'your-api-url' with the actual URL to your account validation API
+    const apiUrl = `/api/account/${accountToTransfer}`;
+
+    return fetch(apiUrl)
+        .then((response) => {
+            if (response.ok) {
+                return true; // Account is valid
+            } else {
+                return false; // Account is invalid
+            }
+        })
+        .catch((error) => {
+            console.error("Error validating account:", error);
+            throw error;
+        });
 }

@@ -8,5 +8,6 @@
         public string AccountNo { get; set; }
         public String TransactionDate { get; set; }
         public string Description { get; set; }
+        public string ?TransferAcct { get; set; }
     }
 }

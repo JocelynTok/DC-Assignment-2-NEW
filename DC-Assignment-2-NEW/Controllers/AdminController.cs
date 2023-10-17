@@ -34,6 +34,12 @@ namespace DC_Assignment_2_NEW.Controllers
             return PartialView("../Admin/AdminManagementView");
         }
 
+        [Route("activityLogs")]
+        public IActionResult GetLogView()
+        {
+            return PartialView("../Admin/ActivityLogView");
+        }
+
         private readonly ILogger<AdminController> _logger;
 
         public AdminController(ILogger<AdminController> logger)
@@ -48,7 +54,7 @@ namespace DC_Assignment_2_NEW.Controllers
             // Perform create user logic
 
             // Log the admin activity
-            string adminUsername= DBManager.GetCurrentAdminByRole();
+            string adminUsername = DBManager.GetCurrentAdminByRole();
             AuditLogger.LogActivity(adminUsername, $"Created user {newUser.Username}");
 
             return Ok();
@@ -76,6 +82,32 @@ namespace DC_Assignment_2_NEW.Controllers
             // Log the admin activity
             string adminUsername = DBManager.GetCurrentAdminByRole();
             AuditLogger.LogActivity(adminUsername, $"Deleted user {username}");
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("adminupdateTransaction")]
+        public IActionResult updateTransaction(string transactionID)
+        {
+            // Perform create user logic
+
+            // Log the admin activity
+            string adminUsername = DBManager.GetCurrentAdminByRole();
+            AuditLogger.LogActivity(adminUsername, $"Updated Transaction ID {transactionID}");
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("admindeleteTransaction")]
+        public IActionResult deleteTransaction(string transactionID)
+        {
+            // Perform update user logic
+
+            // Log the admin activity
+            string adminUsername = DBManager.GetCurrentAdminByRole();
+            AuditLogger.LogActivity(adminUsername, $"Deleted transaction {transactionID}");
 
             return Ok();
         }

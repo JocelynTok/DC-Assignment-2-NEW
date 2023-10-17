@@ -5,37 +5,48 @@
 }
 
 <div id="main">
-    <h1> Transaction Management </h1>
+    <h1 class="sub-title"> Transaction Management </h1>
     <input type="text" id="search-bar" placeholder="Search by accountNo">
     <button id="search-btn" class="standard-button" onclick="handleSearch()">Search</button>
     <!-- Clear Search Button -->
     <button id="clear-search" class="standard-button" onclick="clearSearch()">Clear Search</button>
+
     <br />
-    <!-- Filter Buttons -->
-    <button id="filter-deposit" class="standard-button" onclick="handleFilter('DEPOSIT')">Filter Deposits</button>
-    <button id="filter-withdrawal" class="standard-button" onclick="handleFilter('WITHDRAW')">Filter Withdrawals</button>
-    <!-- Clear Filter Button -->
-    <button id="clear-filter" class="standard-button" onclick="clearFilter()">Clear Filter</button>
-    <br/>
-    <!-- Sort Buttons -->
-    <button id="sort-asc" class="standard-button" onclick="handleSort(true)">Sort Ascending</button>
-    <button id="sort-desc" class="standard-button" onclick="handleSort(false)">Sort Descending</button>
+    <div id="dateSearch-container">
+        <!-- Search Date Range Buttons -->
+        <label class="standard-button" for="search-start-date" id="Label">Start Date: </label>
+        <input class="standard-button" type="date" id="start-date-bar">
+        <label class="standard-button" for="search-end-date" id="Label">  End Date: </label>
+        <input class="standard-button" type="date" id="end-date-bar">
+        <button id="search-date-btn" class="standard-button" onclick="handleDateSearch()">Search Date Range</button>
+        <br />
+    </div>
 
-    <!-- Search Date Range Buttons -->
-    <br />
-    <label class="standard-button" for="search-start-date">Start Date: </label>
-    <input class="standard-button" type="date" id="start-date-bar">
-    <label class="standard-button" for="search-end-date">  End Date: </label>
-    <input class="standard-button" type="date" id="end-date-bar">
-    <button id="search-date-btn" class="standard-button" onclick="handleDateSearch()">Search Date Range</button>
+    <div id="buttons-container">
+        <label class="standard-button" id="Label"> Sorting : </label>
+        <!-- Sort Buttons -->
+        <button id="sort-asc" class="standard-button" onclick="handleSort(true)">Sort Amount Ascending</button>
+        <button id="sort-desc" class="standard-button" onclick="handleSort(false)">Sort Amount Descending</button>
 
-    <!-- Sort By Date Buttons -->
-    <br />
-    <button id="sort-date-asc" class="standard-button" onclick="handleDateSort(true)">Sort By Most Recent</button>
-    <button id="sort-date-desc" class="standard-button" onclick="handleDateSort(false)">Sort By Oldest</button>
+        <!-- Sort By Date Buttons -->
+        <button id="sort-date-asc" class="standard-button" onclick="handleDateSort(true)">Sort Date By Most Recent</button>
+        <button id="sort-date-desc" class="standard-button" onclick="handleDateSort(false)">Sort Date By Oldest</button>
+        <br />
+    </div>
 
+    <div id="filter-container">
+        <label class="standard-button" id="Label"> Filter : </label>
+         <!-- Filter Buttons -->
+        <button id="filter-deposit" class="standard-button" onclick="handleFilter('DEPOSIT')">Filter Deposits</button>
+        <button id="filter-withdrawal" class="standard-button" onclick="handleFilter('WITHDRAW')">Filter Withdrawals</button>
+        <button id="filter-transfer" class="standard-button" onclick="handleFilter('TRANSFER')">Filter Transfers</button>
+       
+        <!-- Clear Filter Button -->
+        <button id="clear-filter" class="standard-button" onclick="clearFilter()">Clear Filter</button>
+        <br />
+    </div>
 
-    <table id="transaction-table" style="width:110%">
+    <table id="transaction-table" class="table">
         <thead>
             <tr>
                 <th>Transaction ID</th>
@@ -43,13 +54,38 @@
                 <th>Account No</th>
                 <th>Amount</th>
                 <th>Transaction Date</th>
+                <th>Transferred to Account</th>
                 <th>Description</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody id="transaction-table-body">
             <!-- Transaction rows will be added here dynamically -->
         </tbody>
     </table>
+</div>
+
+<div id="edit-transaction-modal" class="modal" style="display:none">
+
+    <h2>Edit Transaction Information</h2><br /><br />
+    <label> Amount: </label><input type="text" id="new-amount" placeholder="New Amount"><br /><br />
+    <label> Description : </label><input type="text" id="new-description" placeholder="New Description"><br /><br />
+
+    <button id="confirm-update-transaction">Confirm</button>
+    <button id="cancel-update-transaction">Cancel</button>
+
+</div>
+
+<div id="delete-transaction-modal" class="modal">
+    <h2> Deleting Transaction </h2><br /><br />
+    <p>Are you sure you want to delete this transaction?</p><br />
+    <p>Transaction ID: <span id="deleteTransactionID"></span></p>
+    <p>Transaction Type: <span id="deleteTransactionType"></span></p><br />
+
+    <div class="modal-actions">
+        <button id="confirmDeleteTransaction">Confirm</button>
+        <button id="cancelDeleteTransaction">Cancel</button>
+    </div>
 </div>
 
 <script src="~/lib/jquery/dist/jquery.js"></script>

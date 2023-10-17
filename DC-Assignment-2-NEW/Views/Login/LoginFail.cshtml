@@ -6,20 +6,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>123 Bank</title>
     <link rel="stylesheet" href="~/css/site.css">
 
 </head>
 <body>
-    <div id="header">
+    <div id="main">
         <h1> Welcome to 123 Bank Webpage</h1>
-        <p> Email or Password Does not Match try again </p>
-        <div id=" = LoginForm">
+
+        <p class="error-message"> Email or Password does not match . Please try again </p>
+
+        <div id="LoginForm">
             <input type="text" id="Email" name="Email" placeholder="Email" />
+            <br />
             <input type="password" id="Password" name="Password" placeholder="Password" />
+            <br />
             <button type="button" id="SubmitButton" onclick="performAuth()">Submit</button>
         </div>
-        <script src="~/js/site.js"></script>
-        <script src="~/lib/jquery/dist/jquery.js"></script>
+    </div>
+    <script src="~/js/site.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
 </body>
 </html>
